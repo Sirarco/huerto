@@ -3,531 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Focus Pet Garden v4</title>
+    <title>Focus Garden V10</title>
     <style>
-        /* --- 🎨 PALETA DE COLORES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&family=Noto+Serif+JP:wght@500&display=swap');
+
         :root {
-            --bg-color: #FCF9EA;      /* Crema suave fondo */
-            --primary-color: #BADFDB; /* Teal suave (Paneles) */
-            --accent-color: #FFA4A4;  /* Salmón (Botones Acción) */
-            --accent-hover: #ff8e8e;
-            --secondary-color: #FFBDBD; /* Rosa suave (Detalles) */
-            --text-color: #6A605C;    /* Gris cálido oscuro para texto */
-            --card-bg: #FFFFFF;
+            --bg-color: #FDFAE5;      
+            --primary-color: #A8D8EA; 
+            --accent-color: #FFB7B2;
+            --text-color: #635E5B;    
+            --card-bg: rgba(255, 255, 255, 0.98);
         }
 
         body {
-            font-family: 'Varela Round', 'Segoe UI', Tahoma, sans-serif; /* Fuente redondeada si está disponible */
+            font-family: 'Quicksand', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0; display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; flex-direction: column; overflow: hidden;
+            transition: background 1s ease;
         }
 
-        /* --- PANTALLAS --- */
         .screen {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(186, 223, 219, 0.4); /* Sombra tintada */
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-            z-index: 10;
-            transition: all 0.3s;
-            border: 4px solid var(--primary-color);
+            background: var(--card-bg); padding: 1.5rem; border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center;
+            max-width: 600px; width: 90%; position: relative; z-index: 10;
+            border: 4px solid #fff; transition: opacity 0.5s;
         }
-
         .hidden { display: none !important; }
 
-        h1, h2, h3 { color: #f08a8a; margin-top: 0; }
-
-        /* --- BOTONES --- */
+        /* --- UI ELEMENTS --- */
         .btn {
-            border: none; padding: 12px 25px; border-radius: 50px;
-            font-size: 1rem; cursor: pointer; font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 5px; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-            color: white;
+            border: none; padding: 10px 20px; border-radius: 50px;
+            font-size: 1rem; cursor: pointer; font-weight: 700;
+            transition: all 0.2s; margin: 5px; color: white;
+            font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
         }
-        .btn:active { transform: translateY(4px); box-shadow: none; }
-        
+        .btn:active { transform: translateY(3px); box-shadow: none; }
         .btn-primary { background-color: var(--accent-color); }
-        .btn-primary:hover { background-color: var(--accent-hover); }
-        
-        .btn-secondary { background-color: var(--primary-color); color: #555; }
-        
-        .btn-top-right {
-            position: absolute; top: 15px; right: 15px;
-            background-color: var(--secondary-color); font-size: 0.9rem; padding: 8px 15px;
+        .btn-outline { background: transparent; border: 2px solid var(--primary-color); color: var(--text-color); box-shadow: none; }
+        .btn-home { position: absolute; top: 15px; left: 15px; background: #fff; color: #555; border: 2px solid #eee; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 20; font-size: 1.2rem;}
+
+        .top-bar { position: absolute; top: 15px; right: 15px; display: flex; gap: 5px; z-index: 20; }
+        .btn-icon { padding: 8px 12px; font-size: 1.2rem; border-radius: 15px; background: rgba(255,255,255,0.8); color: #555; border: none; cursor: pointer;}
+
+        /* --- SAVE SLOTS (PERFILES) --- */
+        .slot-container { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .save-slot {
+            width: 80px; height: 80px; border-radius: 15px; border: 3px solid #eee;
+            background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
         }
+        .save-slot:hover { transform: translateY(-5px); border-color: var(--primary-color); }
+        .save-slot.active { border-color: var(--accent-color); background: #FFF0F0; }
+        .slot-name { font-size: 0.7rem; margin-top: 5px; color: #888; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70px;}
 
         /* --- SETUP --- */
-        .pet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .pet-card { 
-            border: 3px solid #eee; border-radius: 15px; padding: 10px; cursor: pointer; 
-            transition: transform 0.2s; background: #fff;
-        }
-        .pet-card.selected { border-color: var(--accent-color); background-color: #fff0f0; transform: scale(1.05); }
-        .pet-icon-select { font-size: 2.5rem; display: block; }
-        input[type="text"] { 
-            width: 80%; padding: 12px; border-radius: 15px; border: 2px solid var(--primary-color); 
-            text-align: center; font-size: 1rem; margin-bottom: 15px; outline: none;
-        }
+        .pet-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .pet-card { border: 2px solid #eee; border-radius: 15px; padding: 5px; cursor: pointer; transition: transform 0.2s; background: #fff; }
+        .pet-card.selected { border-color: var(--accent-color); background-color: #FFF0F0; transform: scale(1.1); }
+        .pet-icon-select { font-size: 2rem; display: block; }
+        
+        .color-options { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #eee; cursor: pointer; transition: transform 0.2s; }
+        .color-dot.active { border-color: var(--accent-color); transform: scale(1.2); }
+
+        input[type="text"], select { width: 100%; padding: 10px; border-radius: 15px; border: 2px solid var(--primary-color); font-size: 1rem; outline: none; box-sizing: border-box; background: #fff; margin-bottom: 10px;}
 
         /* --- JARDÍN --- */
         .garden-scene {
-            height: 250px;
-            position: relative;
-            background: linear-gradient(to top, #eafcf1 0%, transparent 100%);
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-bottom: 4px solid var(--primary-color);
-            overflow: hidden;
+            height: 250px; position: relative;
+            background: linear-gradient(to top, #81d4fa 0%, #b3e5fc 100%);
+            border-radius: 20px; margin-bottom: 20px; overflow: hidden;
+            transition: background 1s ease; border: 4px solid #fff;
         }
-
-        #tree-display { 
-            font-size: 5rem; position: absolute; bottom: 10px; left: 50%;
-            transform: translateX(-50%); transition: transform 0.5s; z-index: 1;
-        }
-
-        #pet-container {
-            position: absolute; bottom: 20px; left: 20%; cursor: pointer; z-index: 2;
-            transition: transform 0.3s;
-        }
-        #pet-sprite { font-size: 3.5rem; }
         
-        /* Animación caminar */
-        @keyframes walkPath {
-            0% { left: 10%; transform: scaleX(1); }
-            45% { left: 80%; transform: scaleX(1); }
-            50% { left: 80%; transform: scaleX(-1); }
-            95% { left: 10%; transform: scaleX(-1); }
-            100% { left: 10%; transform: scaleX(1); }
-        }
-        .walking { animation: walkPath 12s infinite linear; }
+        /* Elementos Ambiente */
+        .celestial-body { font-size: 4rem; position: absolute; top: 20px; right: 20px; transition: all 2s ease; z-index: 2; }
+        .clouds-layer, .stars-layer, .rain-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        .cloud { position: absolute; font-size: 3rem; opacity: 0.8; animation: floatCloud 30s infinite linear; }
+        @keyframes floatCloud { from { transform: translateX(-50px); } to { transform: translateX(450px); } }
+        
+        .star { position: absolute; color: #FFF; animation: twinkle 3s infinite ease-in-out; font-size: 1rem; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; transform: scale(1.2); } }
 
-        /* Bocadillos */
+        .rain-layer {
+            background-image: repeating-linear-gradient(170deg, transparent, transparent 40px, rgba(255, 255, 255, 0.4) 40px, rgba(255, 255, 255, 0.4) 42px);
+            opacity: 0; z-index: 5; background-size: 100% 200%;
+            animation: rainFall 0.7s linear infinite; transition: opacity 2s;
+        }
+        @keyframes rainFall { from {background-position: 0 0;} to {background-position: 0 100%;} }
+
+        #tree-display { font-size: 6rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: all 0.5s; z-index: 3; }
+
+        /* --- MASCOTA ANIMADA --- */
+        #pet-container {
+            position: absolute; bottom: 10px; left: 20%; cursor: pointer; z-index: 4;
+            /* Transition se controla por JS para variar velocidad */
+        }
+        #pet-sprite { font-size: 3.5rem; display: block; transition: transform 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
+
         .emote-bubble {
-            position: absolute; top: -40px; right: -20px; background: white;
-            padding: 5px 10px; border-radius: 15px; border: 2px solid var(--primary-color);
-            font-size: 1.2rem; opacity: 0; transform: translateY(10px); transition: all 0.3s;
+            position: absolute; top: -45px; right: -15px; background: white;
+            padding: 5px 10px; border-radius: 15px; border: 2px solid var(--accent-color);
+            font-size: 1.5rem; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 10;
         }
         .emote-visible { opacity: 1; transform: translateY(0); }
 
-        /* --- TIMER --- */
-        .timer-display { 
-            font-size: 4rem; font-weight: bold; color: var(--accent-color); 
-            margin: 5px 0; text-shadow: 2px 2px 0px #fff;
-        }
-
-        /* --- KANBAN --- */
-        #kanban-overlay, #history-overlay, #game-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px; z-index: 100; padding: 20px; box-sizing: border-box;
-            display: flex; flex-direction: column;
-        }
-
-        .kanban-columns { display: flex; gap: 10px; flex: 1; overflow-x: auto; margin-top: 10px; }
-        .k-col { 
-            flex: 1; background: var(--bg-color); border-radius: 15px; padding: 10px; 
-            display: flex; flex-direction: column; min-width: 130px; border: 2px solid var(--primary-color);
-        }
-        .k-col h4 { color: var(--accent-color); font-size: 0.9rem; text-align: center; margin-bottom: 10px; }
+        /* ANIMACIONES CSS */
+        @keyframes jumpAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+        @keyframes spinAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes doubleJumpAnim { 0% { transform: translateY(0); } 25% { transform: translateY(-15px); } 50% { transform: translateY(0); } 75% { transform: translateY(-15px); } 100% { transform: translateY(0); } }
         
-        .task-card {
-            background: white; padding: 10px; border-radius: 10px; margin-bottom: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer;
-            border-left: 4px solid var(--primary-color);
-        }
-        .history-item { 
-            background: #eee; padding: 8px; margin-bottom: 5px; border-radius: 5px; font-size: 0.85rem; color: #777;
-        }
+        .jumping { animation: jumpAnim 0.5s ease; }
+        .spinning { animation: spinAnim 0.6s ease; }
+        .double-jumping { animation: doubleJumpAnim 0.6s ease; }
+        .face-flip { transform: scaleX(-1); }
 
-        /* --- MINIJUEGO (COSECHA) --- */
-        #game-area {
-            flex: 1; position: relative; border: 3px dashed var(--accent-color);
-            background: #fff; border-radius: 10px; overflow: hidden; cursor: crosshair;
-        }
-        .falling-fruit {
-            position: absolute; font-size: 2.5rem; animation: fall linear forwards; cursor: pointer;
-        }
-        @keyframes fall { from { top: -50px; } to { top: 110%; } }
+        .timer-display { font-size: 4rem; font-weight: 700; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); margin: 5px 0; }
+
+        /* --- OVERLAYS --- */
+        .overlay-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.98); border-radius: 30px; z-index: 100; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         
-        .score-board { font-size: 2rem; color: var(--accent-color); font-weight: bold; margin-bottom: 10px;}
+        .kanban-board { display: flex; gap: 10px; overflow-x: auto; height: 100%; margin-top: 10px; }
+        .kanban-col { flex: 1; min-width: 140px; background: #f9f9f9; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; border: 2px solid #eee; }
+        .task-card { background: white; padding: 10px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.85rem; cursor: pointer; border-left: 4px solid var(--primary-color); }
 
-        /* --- DEV PANEL --- */
-        #dev-panel { position: fixed; bottom: 5px; left: 5px; z-index: 2000; opacity: 0.3; transition: opacity 0.3s; }
+        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; overflow-y: auto; flex: 1; margin-top: 10px; }
+        .word-card { 
+            background: #fff; border-radius: 10px; padding: 10px; text-align: center; 
+            border-left: 4px solid #ddd; cursor: pointer; transition: all 0.3s;
+        }
+        .word-card:hover { transform: translateY(-5px); border-left-color: var(--accent-color); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* DEV TOOLS */
+        #dev-panel { position: fixed; bottom: 5px; left: 5px; background: rgba(0,0,0,0.8); padding: 5px; border-radius: 5px; z-index: 2000; display: flex; gap: 5px; opacity: 0.3; transition: opacity 0.3s; }
         #dev-panel:hover { opacity: 1; }
-        .dev-btn { background: #000; color: #fff; border: none; padding: 5px; font-size: 0.7rem; cursor: pointer; }
+        .dev-btn { background: #333; color: #fff; border: none; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; }
 
     </style>
 </head>
 <body>
 
     <div id="dev-panel">
-        <button class="dev-btn" onclick="devAddProgress(5)">+5m</button>
-        <button class="dev-btn" onclick="devInstantWin()">WIN</button>
+        <button class="dev-btn" onclick="devAdd(-60)">-1m</button>
+        <button class="dev-btn" onclick="devAdd(60)">+1m</button>
+        <button class="dev-btn" onclick="devAdd(300)">+5m</button>
     </div>
 
     <div id="setup-screen" class="screen">
-        <h1>✨ Bienvenido</h1>
-        <p>Elige tu compañero de enfoque</p>
-        <div class="pet-grid">
-            <div class="pet-card" onclick="selectPet('cat')" id="card-cat"><span class="pet-icon-select">🐱</span><span>Gato</span></div>
-            <div class="pet-card" onclick="selectPet('dog')" id="card-dog"><span class="pet-icon-select">🐶</span><span>Perro</span></div>
-            <div class="pet-card" onclick="selectPet('bunny')" id="card-bunny"><span class="pet-icon-select">🐰</span><span>Conejo</span></div>
-            <div class="pet-card" onclick="selectPet('fox')" id="card-fox"><span class="pet-icon-select">🦊</span><span>Zorro</span></div>
+        <h1>🌱 Focus Garden</h1>
+        <p>Selecciona un perfil:</p>
+        
+        <div class="slot-container">
+            <div class="save-slot" onclick="loadProfile(1)" id="slot-1">
+                <span style="font-size:1.5rem">1</span>
+                <span class="slot-name" id="name-1">Nuevo</span>
+            </div>
+            <div class="save-slot" onclick="loadProfile(2)" id="slot-2">
+                <span style="font-size:1.5rem">2</span>
+                <span class="slot-name" id="name-2">Nuevo</span>
+            </div>
+            <div class="save-slot" onclick="loadProfile(3)" id="slot-3">
+                <span style="font-size:1.5rem">3</span>
+                <span class="slot-name" id="name-3">Nuevo</span>
+            </div>
         </div>
-        <input type="text" id="pet-name-input" placeholder="Nombre de tu mascota...">
-        <br>
-        <button class="btn btn-primary" onclick="saveAndStart()">Comenzar</button>
+
+        <div id="profile-form" class="hidden">
+            <div class="pet-grid">
+                <div class="pet-card" onclick="selectPet('cat')" id="card-cat"><span class="pet-icon-select">🐱</span></div>
+                <div class="pet-card" onclick="selectPet('dog')" id="card-dog"><span class="pet-icon-select">🐶</span></div>
+                <div class="pet-card" onclick="selectPet('fox')" id="card-fox"><span class="pet-icon-select">🦊</span></div>
+                <div class="pet-card" onclick="selectPet('bunny')" id="card-bunny"><span class="pet-icon-select">🐰</span></div>
+            </div>
+
+            <div class="color-options">
+                <div class="color-dot active" style="background:#FFA726;" onclick="selectColor('none', this)" title="Original"></div>
+                <div class="color-dot" style="background:#fff;" onclick="selectColor('brightness(2) grayscale(0.5)', this)" title="Blanco Nieve"></div>
+                <div class="color-dot" style="background:#607D8B;" onclick="selectColor('grayscale(100%) brightness(0.8) sepia(0.2) hue-rotate(180deg)', this)" title="Gris Azulado"></div>
+                <div class="color-dot" style="background:#5D4037;" onclick="selectColor('sepia(1) brightness(0.6)', this)" title="Chocolate"></div>
+                <div class="color-dot" style="background:#F5F5DC;" onclick="selectColor('sepia(0.5) brightness(1.2)', this)" title="Crema"></div>
+            </div>
+
+            <input type="text" id="pet-name-input" placeholder="Nombre de la mascota">
+            
+            <select id="time-select">
+                <option value="5">5 Min (Prueba)</option>
+                <option value="25" selected>25 Min (Pomodoro)</option>
+                <option value="45">45 Min (Profundo)</option>
+            </select>
+
+            <button class="btn btn-primary" onclick="startGame()">¡Jugar!</button>
+        </div>
     </div>
 
     <div id="main-screen" class="screen hidden">
-        <button class="btn btn-top-right" onclick="toggleKanban()">📋 Tareas</button>
-
-        <h2 id="header-title">Huerto</h2>
+        <button class="btn-home" onclick="goHome()">🏠</button>
+        <div class="top-bar">
+            <button class="btn btn-icon" onclick="toggleOverlay('collection')">📖</button>
+            <button class="btn btn-icon" onclick="toggleOverlay('kanban')">📋</button>
+        </div>
         
-        <div class="garden-scene">
+        <h2 id="header-title" style="color:white; text-shadow:1px 1px 2px rgba(0,0,0,0.3);">Huerto</h2>
+        
+        <div class="garden-scene" id="garden-bg">
+            <div class="celestial-body" id="celestial">☀️</div>
+            <div class="stars-layer" id="stars" style="opacity:0">
+                <div class="star" style="top:20%; left:20%">✨</div><div class="star" style="top:60%; left:80%">✨</div>
+            </div>
+            <div class="clouds-layer" id="clouds">
+                <div class="cloud" style="top:20px;">☁️</div>
+                <div class="cloud" style="top:50px; left:50%; animation-duration:40s">☁️</div>
+            </div>
+            <div class="rain-layer" id="rain" style="opacity:0"></div>
+
             <div id="tree-display">🌱</div>
-            <div id="pet-container" class="walking" onmouseenter="petInteract()" onmouseleave="petResume()">
+            
+            <div id="pet-container" onmouseenter="petInteract()" onmouseleave="petResume()">
                 <div class="emote-bubble" id="emote-bubble">❤️</div>
                 <div id="pet-sprite">🐱</div>
             </div>
         </div>
 
-        <div class="timer-display" id="timer">25:00</div>
+        <div class="timer-display" id="timer">00:00</div>
+        <button class="btn btn-primary" id="btn-action" onclick="toggleTimer()">Pausar</button>
         
-        <div id="controls">
-            <button class="btn btn-primary" id="btn-action" onclick="toggleTimer()">Plantar (Concentrarse)</button>
-        </div>
-
         <div id="reward-area" class="hidden">
-            <h3>¡Cosecha lista! 🍎</h3>
-            <p>Tu mascota quiere jugar.</p>
-            <button class="btn btn-primary" onclick="startGame()">🎮 JUGAR COSECHA</button>
+            <h3>¡Muy bien!</h3>
+            <button class="btn btn-primary" onclick="toggleOverlay('collection')">✨ Abrir Bitácora</button>
         </div>
 
-        <div id="kanban-overlay" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Mis Tareas</h3>
-                <div>
-                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size:0.8rem;" onclick="toggleHistory()">📜 Historial</button>
-                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size:0.8rem;" onclick="toggleKanban()">❌</button>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="new-task-input" placeholder="Nueva tarea..." style="margin:0; flex:1;">
-                <button class="btn btn-primary" style="margin:0; padding: 0 15px;" onclick="addTask()">+</button>
-            </div>
-
-            <p style="font-size: 0.75rem; color:#999; margin: 5px 0;">Toca una tarea para avanzar.</p>
-
-            <div class="kanban-columns">
-                <div class="k-col"><h4>Por Hacer</h4><div id="col-todo"></div></div>
-                <div class="k-col"><h4>Haciendo</h4><div id="col-doing"></div></div>
-                <div class="k-col"><h4>Hecho</h4><div id="col-done"></div></div>
+        <div id="kanban-overlay" class="overlay-panel hidden">
+            <div style="display:flex; justify-content:space-between;"><h3>📋 Tareas</h3><button class="btn btn-outline" onclick="toggleOverlay('kanban')">X</button></div>
+            <div style="display:flex; gap:5px; margin:10px 0;"><input type="text" id="task-input" placeholder="Tarea..."><button class="btn btn-primary" onclick="addTask()">+</button></div>
+            <div class="kanban-board">
+                <div class="kanban-col"><h4>Por Hacer</h4><div id="col-todo"></div></div>
+                <div class="kanban-col"><h4>Haciendo</h4><div id="col-doing"></div></div>
+                <div class="kanban-col"><h4>Hecho</h4><div id="col-done"></div></div>
             </div>
         </div>
 
-        <div id="history-overlay" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Historial Completado</h3>
-                <button class="btn btn-secondary" onclick="toggleHistory()">Volver</button>
-            </div>
-            <div id="history-list" style="overflow-y:auto; flex:1; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-                </div>
-            <button class="btn btn-secondary" style="font-size:0.8rem; margin-top:10px;" onclick="clearHistory()">Borrar Historial</button>
+        <div id="collection-overlay" class="overlay-panel hidden">
+            <div style="display:flex; justify-content:space-between;"><h3>📖 Bitácora</h3><button class="btn btn-outline" onclick="toggleOverlay('collection')">X</button></div>
+            <div class="collection-grid" id="collection-list"></div>
         </div>
-
-        <div id="game-overlay" class="hidden">
-            <div class="score-board">Puntos: <span id="game-score">0</span></div>
-            <p style="margin:0; font-size:0.9rem; color:#888;">¡Atrapa las frutas antes de que caigan!</p>
-            
-            <div id="game-area">
-                </div>
-
-            <div style="margin-top:10px;">
-                <span id="game-timer" style="font-weight:bold;">10s</span>
-                <button class="btn btn-secondary" onclick="closeGame()">Salir</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        const FULL_TIME = 25 * 60; 
-        let timeLeft = FULL_TIME;
-        let timerInterval, emoteInterval, gameInterval, spawnInterval;
-        let isRunning = false;
+        // --- DATA ---
+        const jpWords = [
+            {jp:"Komorebi", es:"Luz entre hojas"}, {jp:"Ikigai", es:"Propósito de vida"},
+            {jp:"Wabi-sabi", es:"Belleza imperfecta"}, {jp:"Gaman", es:"Paciencia digna"},
+            {jp:"Ukiyo", es:"Mundo flotante"}, {jp:"Yugen", es:"Profundidad misteriosa"}
+        ];
+        const petEmojis = {'cat':'🐱', 'dog':'🐶', 'bunny':'🐰', 'fox':'🦊'};
+        const treeStages = ['🌱','🌱','🌿','🌿','🎋','🌳','🌳','🌸','🍎'];
         
-        const petEmojis = { 'cat': '🐱', 'dog': '🐶', 'bunny': '🐰', 'fox': '🦊' };
-        const emotes = ['🎵', '❤️', '🦴', '🥕', '💤', '📝', '✨', '💻'];
+        let currentState = {
+            currentSlot: 1,
+            pet: { type:'cat', name:'', filter:'none' },
+            tasks: [],
+            words: [] // En esta versión simplificada desbloqueamos todo para demo
+        };
         
-        let userSettings = { petType: 'cat', petName: 'Michi' };
-        let tasks = [];
-        let archivedTasks = [];
+        let allProfiles = { 1:null, 2:null, 3:null }; // Almacenamiento
+        
+        let timer = { total: 25*60, left: 25*60, interval: null };
+        let petAI = { interval: null, moving: true };
 
-        // --- INICIO ---
+        // --- INIT ---
         window.onload = function() {
-            if(localStorage.getItem('focusPet_v4')) userSettings = JSON.parse(localStorage.getItem('focusPet_v4'));
-            if(localStorage.getItem('focusPet_tasks_v4')) tasks = JSON.parse(localStorage.getItem('focusPet_tasks_v4'));
-            if(localStorage.getItem('focusPet_history_v4')) archivedTasks = JSON.parse(localStorage.getItem('focusPet_history_v4'));
-            
-            if(localStorage.getItem('focusPet_v4')) showMainScreen();
+            if(localStorage.getItem('fg_profiles')) allProfiles = JSON.parse(localStorage.getItem('fg_profiles'));
+            updateSlotsUI();
         };
 
-        // --- SETUP ---
-        function selectPet(type) {
-            userSettings.petType = type;
-            document.querySelectorAll('.pet-card').forEach(el => el.classList.remove('selected'));
-            document.getElementById('card-' + type).classList.add('selected');
+        function updateSlotsUI() {
+            for(let i=1; i<=3; i++) {
+                const p = allProfiles[i];
+                document.getElementById('name-'+i).innerText = p ? p.name : "Nuevo";
+                // Reset visual selection
+                document.getElementById('slot-'+i).classList.remove('active');
+            }
         }
 
-        function saveAndStart() {
-            const name = document.getElementById('pet-name-input').value;
-            if(!name.trim()) return alert("¡Nombre requerido!");
-            userSettings.petName = name;
-            localStorage.setItem('focusPet_v4', JSON.stringify(userSettings));
-            showMainScreen();
+        function loadProfile(slot) {
+            currentState.currentSlot = slot;
+            updateSlotsUI();
+            document.getElementById('slot-'+slot).classList.add('active');
+            
+            const p = allProfiles[slot];
+            document.getElementById('profile-form').classList.remove('hidden');
+            
+            if(p) {
+                // Cargar datos existentes
+                document.getElementById('pet-name-input').value = p.name;
+                selectPet(p.type);
+                // Restaurar color es complejo sin UI complex, dejamos default por ahora o el guardado
+                currentState.pet = p; 
+            } else {
+                // Nuevo perfil
+                document.getElementById('pet-name-input').value = "";
+                currentState.pet = { type:'cat', name:'', filter:'none' };
+            }
         }
 
-        function showMainScreen() {
+        // --- SETUP ACTIONS ---
+        function selectPet(type) { currentState.pet.type = type; document.querySelectorAll('.pet-card').forEach(e=>e.classList.remove('selected')); document.getElementById('card-'+type).classList.add('selected'); }
+        function selectColor(filter, el) { currentState.pet.filter = filter; document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+        
+        function startGame() {
+            const name = document.getElementById('pet-name-input').value || "Amigo";
+            currentState.pet.name = name;
+            
+            // Guardar perfil
+            allProfiles[currentState.currentSlot] = currentState.pet;
+            localStorage.setItem('fg_profiles', JSON.stringify(allProfiles));
+            
+            // Configurar Timer
+            const mins = parseInt(document.getElementById('time-select').value);
+            timer.total = mins * 60;
+            timer.left = timer.total;
+
+            // UI Switch
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
-            document.getElementById('header-title').innerText = `Huerto de ${userSettings.petName}`;
-            document.getElementById('pet-sprite').innerText = petEmojis[userSettings.petType];
-            updateVisuals();
-            startPetBehavior();
-        }
-
-        // --- KANBAN & HISTORIAL ---
-        function toggleKanban() {
-            document.getElementById('kanban-overlay').classList.toggle('hidden');
-            renderKanban();
-        }
-        function toggleHistory() {
-            const hist = document.getElementById('history-overlay');
-            hist.classList.toggle('hidden');
-            renderHistory();
-        }
-
-        function addTask() {
-            const input = document.getElementById('new-task-input');
-            const text = input.value.trim();
-            if(!text) return;
-            tasks.push({ id: Date.now(), text: text, status: 'todo' });
-            input.value = "";
-            saveTasks();
-            renderKanban();
-        }
-
-        function advanceTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if(!task) return;
-
-            if(task.status === 'todo') task.status = 'doing';
-            else if(task.status === 'doing') task.status = 'done';
-            else if(task.status === 'done') {
-                // Mover a historial
-                task.status = 'archived';
-                task.completedAt = new Date().toLocaleTimeString();
-                archivedTasks.push(task);
-                tasks = tasks.filter(t => t.id !== id);
-                localStorage.setItem('focusPet_history_v4', JSON.stringify(archivedTasks));
-            }
-            saveTasks();
-            renderKanban();
-        }
-
-        function saveTasks() { localStorage.setItem('focusPet_tasks_v4', JSON.stringify(tasks)); }
-
-        function renderKanban() {
-            ['todo', 'doing', 'done'].forEach(status => {
-                const col = document.getElementById(`col-${status}`);
-                col.innerHTML = '';
-                tasks.filter(t => t.status === status).forEach(task => {
-                    const div = document.createElement('div');
-                    div.className = 'task-card';
-                    div.innerText = task.text;
-                    div.onclick = () => advanceTask(task.id);
-                    if(status === 'done') div.style.opacity = "0.7";
-                    col.appendChild(div);
-                });
-            });
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            if(archivedTasks.length === 0) list.innerHTML = '<p style="text-align:center">No hay tareas completadas aún.</p>';
+            document.getElementById('header-title').innerText = `Huerto de ${name}`;
             
-            archivedTasks.slice().reverse().forEach(task => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `✅ <b>${task.text}</b> <span style="font-size:0.7em; float:right">${task.completedAt || ''}</span>`;
-                list.appendChild(div);
-            });
+            // Render Mascota
+            const sprite = document.getElementById('pet-sprite');
+            sprite.innerText = petEmojis[currentState.pet.type];
+            sprite.style.filter = currentState.pet.filter;
+            
+            updateVisuals();
+            toggleTimer();
+            startPetLife(); // INICIAR IA
+            renderCollection();
+            updateKanban();
+        }
+
+        function goHome() { if(confirm("¿Salir?")) location.reload(); }
+
+        // --- PET AI (MOVIMIENTO AUTÓNOMO REAL) ---
+        function startPetLife() {
+            // Decisión cada 2.5 segundos
+            if(petAI.interval) clearInterval(petAI.interval);
+            petAI.interval = setInterval(petDecision, 2500);
+        }
+
+        function petDecision() {
+            if(!petAI.moving) return; // Si el usuario interactúa, no hacer nada
+
+            const pet = document.getElementById('pet-container');
+            const sprite = document.getElementById('pet-sprite');
+            const roll = Math.random();
+
+            // Limpiar clases
+            pet.classList.remove('jumping', 'spinning', 'double-jumping');
+
+            if(roll < 0.4) {
+                // 40% CAMINAR O CORRER
+                const currentLeft = parseFloat(pet.style.left || 20);
+                const newLeft = 10 + Math.random() * 70; // Posición aleatoria 10-80%
+                
+                const dist = Math.abs(newLeft - currentLeft);
+                const isRun = dist > 30; // Si está lejos, corre
+                
+                pet.style.transition = `left ${isRun ? 1 : 3}s ease-in-out`; // Velocidad dinámica
+                pet.style.left = newLeft + "%";
+                
+                // Mirar dirección
+                if(newLeft < currentLeft) sprite.classList.add('face-flip');
+                else sprite.classList.remove('face-flip');
+
+            } else if (roll < 0.6) {
+                // 20% SALTAR
+                pet.classList.add('jumping');
+            } else if (roll < 0.7) {
+                // 10% GIRAR DE ALEGRÍA
+                pet.classList.add('spinning');
+                showEmote('✨');
+            } else {
+                // 30% QUIETO (IDLE)
+                // Solo respira
+            }
+        }
+
+        function petInteract() {
+            petAI.moving = false; // Pausar IA
+            const pet = document.getElementById('pet-container');
+            
+            // Frenar movimiento
+            const computed = window.getComputedStyle(pet);
+            pet.style.left = computed.left;
+            pet.style.transition = "none";
+            
+            // Animación
+            pet.classList.remove('jumping', 'spinning');
+            void pet.offsetWidth; // reset
+            pet.classList.add('double-jumping');
+            showEmote('❤️');
+        }
+
+        function petResume() {
+            petAI.moving = true; // Reanudar IA
+        }
+
+        function showEmote(emoji) {
+            const b = document.getElementById('emote-bubble');
+            b.innerText = emoji; b.classList.add('emote-visible');
+            setTimeout(()=>b.classList.remove('emote-visible'), 1500);
+        }
+
+        // --- TIMER & ENV ---
+        function toggleTimer() {
+            if(timer.interval) { clearInterval(timer.interval); timer.interval=null; document.getElementById('btn-action').innerText="Reanudar"; }
+            else { document.getElementById('btn-action').innerText="Pausar"; timer.interval = setInterval(tick, 1000); }
         }
         
-        function clearHistory() {
-            if(confirm("¿Borrar todo el historial?")) {
-                archivedTasks = [];
-                localStorage.setItem('focusPet_history_v4', JSON.stringify(archivedTasks));
-                renderHistory();
-            }
-        }
-
-        // --- TIMER & MASCOTA ---
-        function toggleTimer() {
-            if (isRunning) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                document.getElementById('btn-action').innerText = "Reanudar";
-                document.getElementById('btn-action').style.background = "var(--primary-color)";
-            } else {
-                isRunning = true;
-                document.getElementById('btn-action').innerText = "Pausar";
-                document.getElementById('btn-action').style.background = "var(--secondary-color)";
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    updateVisuals();
-                    if (timeLeft <= 0) finishSession();
-                }, 1000);
-            }
+        function tick() {
+            timer.left--;
+            updateVisuals();
+            if(timer.left <= 0) finish();
         }
 
         function updateVisuals() {
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
-            document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-
-            const progress = 1 - (timeLeft / FULL_TIME);
+            let t = timer.left < 0 ? 0 : timer.left;
+            const m = Math.floor(t/60).toString().padStart(2,'0');
+            const s = (t%60).toString().padStart(2,'0');
+            document.getElementById('timer').innerText = `${m}:${s}`;
+            
+            const prog = 1 - (t / timer.total);
+            
+            // Tree
+            const idx = Math.min(Math.floor(prog*treeStages.length), treeStages.length-1);
             const tree = document.getElementById('tree-display');
-            let icon = "🌱";
-            if(progress > 0.3) icon = "🌿";
-            if(progress > 0.6) icon = "🌳";
-            if(progress >= 1) icon = "🍎";
-            tree.innerText = icon;
-            tree.style.transform = `translateX(-50%) scale(${1 + progress})`;
+            tree.innerText = treeStages[idx];
+            tree.style.transform = `translateX(-50%) scale(${1 + prog*0.6})`;
+
+            // Atmosfera simplificada
+            const bg = document.getElementById('garden-bg');
+            if(prog < 0.3) bg.style.background = "linear-gradient(to top, #81d4fa, #4fc3f7)"; // Dia
+            else if(prog < 0.7) { bg.style.background = "linear-gradient(to top, #ffcc80, #ffab91)"; // Tarde
+                document.getElementById('rain').style.opacity = (prog>0.45 && prog<0.55) ? 0.6 : 0; }
+            else { bg.style.background = "linear-gradient(to top, #1a237e, #000051)"; // Noche
+                document.getElementById('stars').style.opacity = 1; }
         }
 
-        function startPetBehavior() {
-            if(emoteInterval) clearInterval(emoteInterval);
-            emoteInterval = setInterval(() => {
-                const bubble = document.getElementById('emote-bubble');
-                bubble.innerText = emotes[Math.floor(Math.random() * emotes.length)];
-                bubble.classList.add('emote-visible');
-                setTimeout(() => bubble.classList.remove('emote-visible'), 2000);
-            }, 5000);
-        }
-
-        function finishSession() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            document.getElementById('controls').classList.add('hidden');
+        function finish() {
+            clearInterval(timer.interval); clearInterval(petAI.interval);
             document.getElementById('reward-area').classList.remove('hidden');
-            
-            // Mascota celebra
-            const pet = document.getElementById('pet-container');
-            pet.style.animation = 'none'; pet.style.left = '50%'; 
-            pet.style.transform = 'translateX(-50%) scale(1.5)';
-            document.getElementById('emote-bubble').innerText = '🎉';
-            document.getElementById('emote-bubble').classList.add('emote-visible');
         }
 
-        // --- MINIJUEGO: COSECHA FRENÉTICA ---
-        let gameScore = 0;
-        let gameTime = 10;
+        // --- EXTRAS ---
+        function toggleOverlay(id) { document.getElementById(id+'-overlay').classList.toggle('hidden'); }
+        function devAdd(s) { timer.left -= s; updateVisuals(); if(timer.left<=0) finish(); }
         
-        function startGame() {
-            document.getElementById('game-overlay').classList.remove('hidden');
-            gameScore = 0;
-            gameTime = 10;
-            document.getElementById('game-score').innerText = "0";
-            document.getElementById('game-area').innerHTML = ""; // Limpiar
-            
-            // Timer del juego
-            gameInterval = setInterval(() => {
-                gameTime--;
-                document.getElementById('game-timer').innerText = gameTime + "s";
-                if(gameTime <= 0) endGame();
-            }, 1000);
-
-            // Generar frutas
-            spawnInterval = setInterval(spawnFruit, 600);
+        // Kanban Mockup
+        function addTask() { 
+            const val = document.getElementById('task-input').value; 
+            if(val) { 
+                const d = document.createElement('div'); d.className='task-card'; d.innerText=val; 
+                d.onclick=function(){this.remove()}; // Simple remove for demo
+                document.getElementById('col-todo').appendChild(d);
+                document.getElementById('task-input').value="";
+            }
         }
+        function updateKanban() {} // Placeholder
 
-        function spawnFruit() {
-            const area = document.getElementById('game-area');
-            const fruit = document.createElement('div');
-            fruit.className = 'falling-fruit';
-            fruit.innerText = ['🍎','🍏','🍊','🍒'][Math.floor(Math.random()*4)];
-            fruit.style.left = Math.random() * 90 + "%";
-            
-            // Velocidad aleatoria
-            const duration = 1 + Math.random(); 
-            fruit.style.animationDuration = duration + "s";
-
-            fruit.onmousedown = function() {
-                gameScore += 10;
-                document.getElementById('game-score').innerText = gameScore;
-                fruit.remove(); // Eliminar fruta clickeada
-                
-                // Efecto visual simple
-                const spark = document.createElement('div');
-                spark.style.position = 'absolute';
-                spark.style.left = fruit.style.left;
-                spark.style.top = fruit.offsetTop + 'px';
-                spark.innerText = "+10";
-                spark.style.color = "var(--accent-color)";
-                spark.style.fontWeight = "bold";
-                area.appendChild(spark);
-                setTimeout(() => spark.remove(), 500);
-            };
-
-            area.appendChild(fruit);
-
-            // Limpiar fruta si cae al final
-            setTimeout(() => { if(fruit.parentNode) fruit.remove(); }, duration * 1000);
+        function renderCollection() {
+            const c = document.getElementById('collection-list'); c.innerHTML="";
+            jpWords.forEach(w => {
+                const d = document.createElement('div'); d.className='word-card';
+                d.innerHTML = `<b style="color:#FFB7B2; display:block; font-size:1.2rem">${w.jp}</b><span style="font-size:0.8rem; color:#777">${w.es}</span>`;
+                c.appendChild(d);
+            });
         }
-
-        function endGame() {
-            clearInterval(gameInterval);
-            clearInterval(spawnInterval);
-            document.getElementById('game-area').innerHTML = `<h2 style="margin-top:50px; color:var(--accent-color)">¡Fin!</h2><p>Puntuación: ${gameScore}</p>`;
-        }
-
-        function closeGame() {
-            document.getElementById('game-overlay').classList.add('hidden');
-            clearInterval(gameInterval);
-            clearInterval(spawnInterval);
-            // Reiniciar estado web principal
-            document.getElementById('controls').classList.remove('hidden');
-            document.getElementById('reward-area').classList.add('hidden');
-            // Reset visual
-            timeLeft = FULL_TIME;
-            updateVisuals();
-            document.getElementById('pet-container').style.animation = 'walkPath 12s infinite linear'; // Volver a caminar
-        }
-
-        // --- DEV ---
-        function devAddProgress(m) { timeLeft -= m*60; if(timeLeft<0)timeLeft=0; updateVisuals(); if(timeLeft===0)finishSession(); }
-        function devInstantWin() { timeLeft=0; updateVisuals(); finishSession(); }
-        function petInteract() { document.getElementById('pet-container').style.animationPlayState='paused'; }
-        function petResume() { document.getElementById('pet-container').style.animationPlayState='running'; }
-
     </script>
 </body>
 </html>

@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Focus Garden V16</title>
+    <title>Focus Garden V17</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Noto+Serif+JP:wght@600&family=Mochiy+Pop+One&display=swap');
 
         :root {
             --bg-color: #FFFDF5;
             --primary-color: #A5D6A7; 
+            --primary-dark: #66BB6A;
             --accent-color: #F48FB1;
-            --accent-dark: #F06292;
+            --accent-dark: #EC407A;
             --text-color: #4E342E;
             --card-bg: #FFFFFF;
         }
@@ -30,7 +31,7 @@
         .screen {
             background: var(--card-bg); padding: 1.5rem; border-radius: 25px;
             box-shadow: 0 10px 30px rgba(78, 52, 46, 0.08); text-align: center;
-            max-width: 600px; width: 95%; position: relative; z-index: 10;
+            max-width: 650px; width: 95%; position: relative; z-index: 10;
             border: 4px solid #fff; outline: 3px solid #Fce4ec;
             margin: 10px 0;
         }
@@ -38,34 +39,69 @@
 
         h1, h2, h3 { font-family: 'Mochiy Pop One', sans-serif; color: var(--accent-dark); letter-spacing: 1px; margin: 0.5rem 0;}
 
-        /* --- HEADER --- */
-        .header-area {
-            display: flex; flex-direction: row; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
+        /* --- BOTONES PULIDOS --- */
+        .btn {
+            border: none; padding: 10px 24px; border-radius: 50px;
+            font-size: 0.9rem; cursor: pointer; font-weight: 700;
+            transition: all 0.2s; margin: 5px; 
+            font-family: 'Quicksand', sans-serif; 
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        
-        .header-title-box { display: flex; align-items: center; gap: 10px; }
-        
+        .btn:active { transform: scale(0.95); }
+
+        /* Botón Principal (Relleno) */
+        .btn-primary { 
+            background-color: var(--accent-color); color: #fff; 
+            box-shadow: 0 4px 10px rgba(244, 143, 177, 0.4);
+        }
+        .btn-primary:hover { background-color: var(--accent-dark); transform: translateY(-2px); }
+
+        /* Botón Secundario (Borde Suave) - "Ver Palabra" / "Cerrar" */
+        .btn-outline { 
+            background: transparent; 
+            border: 2px solid var(--accent-color); 
+            color: var(--accent-dark);
+            box-shadow: none;
+        }
+        .btn-outline:hover { 
+            background: #FFF0F5; /* Fondo rosado muy suave */
+            border-color: var(--accent-dark);
+        }
+
+        /* Botón Cerrar Pequeño (Para Overlays) */
+        .btn-close {
+            background: #f5f5f5; color: #888; 
+            border: 1px solid #ddd; padding: 5px 15px; border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .btn-close:hover { background: #ffebee; color: var(--accent-color); border-color: var(--accent-color); }
+
         .btn-home { 
             background: #fff; color: var(--accent-color); 
-            border: 2px solid #eee; width: 40px; height: 40px; border-radius: 50%; 
-            cursor: pointer; font-size: 1.2rem; 
+            border: 2px solid #eee; width: 45px; height: 45px; border-radius: 50%; 
+            cursor: pointer; font-size: 1.4rem; 
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 3px 5px rgba(0,0,0,0.05); transition: 0.2s;
         }
         .btn-home:hover { transform: scale(1.1); border-color: var(--accent-color); }
 
+        /* --- HEADER --- */
+        .header-area {
+            display: flex; flex-direction: row; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
+        }
+        .header-title-box { display: flex; align-items: center; gap: 10px; }
         .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
         .btn-menu { 
-            padding: 6px 12px; font-size: 0.8rem; border-radius: 12px; 
+            padding: 6px 12px; font-size: 0.8rem; border-radius: 15px; 
             background: #fff; color: var(--text-color); 
             border: 2px solid #E0F2F1; cursor: pointer; font-weight: bold;
             display: flex; align-items: center; gap: 5px; transition: transform 0.2s;
         }
-        .btn-menu:hover { transform: translateY(-2px); border-color: var(--primary-color); }
+        .btn-menu:hover { transform: translateY(-2px); border-color: var(--primary-color); background: #F1F8E9; }
 
-        /* --- JARDÍN (Sin contador dentro) --- */
+        /* --- JARDÍN --- */
         .garden-scene {
             height: 240px; position: relative;
             background: linear-gradient(to top, #81d4fa 0%, #b3e5fc 100%);
@@ -97,23 +133,14 @@
         @keyframes jumpAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
         @keyframes spinAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- CONTADOR EXTERNO --- */
+        /* --- CONTADOR --- */
         .timer-container {
-            margin: 10px 0 20px 0;
-            padding: 10px;
-            background: #FFF8E1; /* Fondo suave para el contador */
-            border-radius: 20px;
-            border: 2px solid #FFE0B2;
-            display: inline-block;
-            min-width: 200px;
+            margin: 10px 0 20px 0; padding: 10px; background: #FFF8E1; border-radius: 20px;
+            border: 2px solid #FFE0B2; display: inline-block; min-width: 200px;
         }
-        .timer-display { 
-            font-size: 3.5rem; font-weight: 700; color: var(--accent-dark); 
-            margin: 0; font-family: 'Mochiy Pop One', sans-serif;
-            letter-spacing: 2px; line-height: 1;
-        }
+        .timer-display { font-size: 3.5rem; font-weight: 700; color: var(--accent-dark); margin: 0; font-family: 'Mochiy Pop One', sans-serif; letter-spacing: 2px; line-height: 1; }
 
-        /* --- CONTROLES DE TIEMPO --- */
+        /* --- CONTROLES TIEMPO --- */
         .time-controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-time {
             background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 6px 14px;
@@ -123,23 +150,18 @@
         .btn-time.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 3px 6px rgba(165, 214, 167, 0.4); }
 
         .action-area { display: flex; justify-content: center; gap: 10px; margin-top: 5px; }
-        .btn-primary { background-color: var(--accent-color); color: #fff; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(244, 143, 177, 0.4); }
         .btn-reset { background: #ECEFF1; color: #555; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-reset:hover { background: #CFD8DC; transform: rotate(180deg); }
 
-        /* --- SETUP & SLOTS --- */
-        .slot-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        /* --- SLOTS --- */
+        .slot-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
         .save-slot {
             width: 100px; height: 110px; border-radius: 18px; border: 3px dashed #CFD8DC;
             background: #FAFAFA; display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.2s; position: relative;
         }
         .save-slot.occupied { border: 3px solid var(--primary-color); background: #F1F8E9; border-style: solid;}
-        .delete-btn {
-            position: absolute; top: -8px; right: -8px; background: #FF5252; color: white; width: 24px; height: 24px;
-            border-radius: 50%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
-            border: 2px solid white; cursor: pointer; z-index: 5;
-        }
+        .delete-btn { position: absolute; top: -8px; right: -8px; background: #FF5252; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; z-index: 5; }
         .pet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .pet-card { border: 2px solid #F5F5F5; border-radius: 15px; padding: 8px; cursor: pointer; background: #fff; }
         .pet-card.selected { border-color: var(--accent-color); background-color: #FCE4EC; transform: scale(1.1); }
@@ -151,9 +173,23 @@
 
         /* --- OVERLAYS --- */
         .overlay-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FFFDF5; border-radius: 25px; z-index: 100; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; flex: 1; margin-top: 15px; padding: 5px; }
+        .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; flex: 1; margin-top: 5px; padding: 5px; }
 
-        /* Bitácora */
+        /* --- HUERTO (FRUTAS) --- */
+        .fruit-card {
+            background-color: #F1F8E9; border-radius: 12px; padding: 12px; text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid #C5E1A5; 
+            transition: transform 0.2s; position: relative; display: flex; flex-direction: column; align-items: center;
+        }
+        .fruit-card.locked { opacity: 0.6; background: #FAFAFA; border-color: #EEE; border-style: dashed; }
+        .fruit-card.locked .fruit-icon { filter: grayscale(100%) opacity(0.5); }
+        .fruit-card.unlocked:hover { transform: translateY(-3px); border-color: var(--primary-dark); }
+        .fruit-icon { font-size: 2.5rem; display: block; margin-bottom: 5px; }
+        .fruit-name { font-weight: bold; font-size: 0.9rem; color: #33691E; }
+        .fruit-desc { font-size: 0.75rem; color: #558B2F; margin-top: 4px; line-height: 1.2; }
+
+        /* --- BITÁCORA (JAPONÉS) --- */
         .oriental-card {
             background-color: #FFEBEE;
             background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
@@ -167,18 +203,7 @@
         .jp-read { font-size: 0.75rem; color: #555; font-style: italic; }
         .jp-meaning { font-size: 0.85rem; color: #880E4F; font-weight: 500; }
 
-        /* Huerto */
-        .fruit-card {
-            background-color: #F1F8E9; border-radius: 12px; padding: 12px; text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid #C5E1A5; 
-            transition: transform 0.2s; display: flex; flex-direction: column; align-items: center;
-        }
-        .fruit-card.locked { opacity: 0.6; background: #FAFAFA; border-color: #EEE; border-style: dashed; }
-        .fruit-card.locked .fruit-icon { filter: grayscale(100%) opacity(0.5); }
-        .fruit-icon { font-size: 2.5rem; display: block; margin-bottom: 5px; }
-        .fruit-name { font-weight: bold; font-size: 0.9rem; color: #33691E; }
-
-        /* Kanban */
+        /* --- KANBAN --- */
         .kanban-board { display: flex; gap: 10px; overflow-x: auto; height: 100%; margin-top: 10px; }
         .kanban-col { flex: 1; min-width: 140px; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; }
         .col-todo { background: #FFF3E0; } .col-doing { background: #E3F2FD; } .col-done { background: #E8F5E9; }
@@ -193,7 +218,7 @@
             .header-area { flex-direction: column; align-items: center; gap: 10px; }
             .toolbar { width: 100%; justify-content: center; }
             .garden-scene { height: 220px; }
-            .timer-display { font-size: 3rem; }
+            .timer-display { font-size: 2.8rem; }
         }
     </style>
 </head>
@@ -278,13 +303,13 @@
             <h3 style="color:var(--accent-dark)">¡Cosecha Doble! 🌸</h3>
             <p>Has ganado una fruta y una palabra nueva.</p>
             <div style="display:flex; justify-content:center; gap:10px;">
-                <button class="btn btn-primary" onclick="toggleOverlay('huerto')">🍎 Ver Fruta</button>
+                <button class="btn btn-outline" onclick="toggleOverlay('huerto')">🍎 Ver Fruta</button>
                 <button class="btn btn-outline" onclick="toggleOverlay('bitacora')">📖 Ver Palabra</button>
             </div>
         </div>
 
         <div id="kanban-overlay" class="overlay-panel hidden">
-            <div style="display:flex; justify-content:space-between;"><h3>📋 Tareas</h3><button class="btn btn-outline" onclick="toggleOverlay('kanban')">Cerrar</button></div>
+            <div class="overlay-header"><h3>📋 Tareas</h3><button class="btn-close" onclick="toggleOverlay('kanban')">Cerrar</button></div>
             <div style="display:flex; gap:5px; margin:10px 0;"><input type="text" id="task-input" placeholder="Nueva tarea..."><button class="btn btn-primary" onclick="addTask()">+</button></div>
             <div class="kanban-board">
                 <div class="kanban-col col-todo"><h4>Por Hacer</h4><div id="col-todo"></div></div>
@@ -294,24 +319,31 @@
         </div>
 
         <div id="huerto-overlay" class="overlay-panel hidden">
-            <div style="display:flex; justify-content:space-between;"><h3>🧺 Mi Huerto</h3><button class="btn btn-outline" onclick="toggleOverlay('huerto')">Cerrar</button></div>
+            <div class="overlay-header"><h3>🧺 Mi Huerto</h3><button class="btn-close" onclick="toggleOverlay('huerto')">Cerrar</button></div>
             <div class="grid-container" id="huerto-list"></div>
         </div>
 
         <div id="bitacora-overlay" class="overlay-panel hidden">
-            <div style="display:flex; justify-content:space-between;"><h3>📖 Bitácora Zen</h3><button class="btn btn-outline" onclick="toggleOverlay('bitacora')">Cerrar</button></div>
+            <div class="overlay-header"><h3>📖 Bitácora Zen</h3><button class="btn-close" onclick="toggleOverlay('bitacora')">Cerrar</button></div>
             <div class="grid-container" id="bitacora-list"></div>
         </div>
     </div>
 
     <script>
+        // --- DATOS CON CURIOSIDADES ---
         const harvestDB = [
-            { id: 0, icon: "🍎", name: "Manzana", desc: "Sabiduría" }, { id: 1, icon: "🍋", name: "Limón", desc: "Frescura" },
-            { id: 2, icon: "🍇", name: "Uvas", desc: "Abundancia" }, { id: 3, icon: "🍒", name: "Cerezas", desc: "Dulzura" },
-            { id: 4, icon: "🍑", name: "Durazno", desc: "Longevidad" }, { id: 5, icon: "🍓", name: "Fresa", desc: "Amor" },
-            { id: 6, icon: "🌻", name: "Girasol", desc: "Luz Solar" }, { id: 7, icon: "🌷", name: "Tulipán", desc: "Belleza" },
-            { id: 8, icon: "🍍", name: "Piña", desc: "Bienvenida" }, { id: 9, icon: "🍉", name: "Sandía", desc: "Verano" },
-            { id: 10, icon: "🥑", name: "Aguacate", desc: "Salud" }, { id: 11, icon: "🥕", name: "Zanahoria", desc: "Tierra" }
+            { id: 0, icon: "🍎", name: "Manzana", desc: "Flotan porque son 25% aire." }, 
+            { id: 1, icon: "🍋", name: "Limón", desc: "Tienen más azúcar que las fresas." },
+            { id: 2, icon: "🍇", name: "Uvas", desc: "Explotan en el microondas." }, 
+            { id: 3, icon: "🍒", name: "Cerezas", desc: "Ayudan a dormir mejor." },
+            { id: 4, icon: "🍑", name: "Durazno", desc: "Relacionados con las almendras." }, 
+            { id: 5, icon: "🍓", name: "Fresa", desc: "La única con semillas por fuera." },
+            { id: 6, icon: "🌻", name: "Girasol", desc: "Siguen al sol (Heliotropismo)." }, 
+            { id: 7, icon: "🌷", name: "Tulipán", desc: "Sus bulbos son comestibles." },
+            { id: 8, icon: "🍍", name: "Piña", desc: "Tarda 2 años en crecer." }, 
+            { id: 9, icon: "🍉", name: "Sandía", desc: "Es 92% agua pura." },
+            { id: 10, icon: "🥑", name: "Aguacate", desc: "Es una fruta, no verdura." }, 
+            { id: 11, icon: "🥕", name: "Zanahoria", desc: "Antes eran moradas, no naranjas." }
         ];
         const jpWords = [
             { id: 0, jp: "木漏れ日", read: "Komorebi", es: "Luz entre hojas" }, 
@@ -335,7 +367,7 @@
         let sessionActive = true; 
 
         window.onload = function() {
-            if(localStorage.getItem('fg_v16_slots')) slotsData = JSON.parse(localStorage.getItem('fg_v16_slots'));
+            if(localStorage.getItem('fg_v17_slots')) slotsData = JSON.parse(localStorage.getItem('fg_v17_slots'));
             updateSlotsUI();
         };
 
@@ -359,7 +391,7 @@
             }
         }
         function deleteSlot(id, e) { e.stopPropagation(); if(confirm("¿Borrar partida?")) { slotsData[id]=null; save(); updateSlotsUI(); } }
-        function save() { localStorage.setItem('fg_v16_slots', JSON.stringify(slotsData)); }
+        function save() { localStorage.setItem('fg_v17_slots', JSON.stringify(slotsData)); }
 
         function showCreateForm(id) {
             activeSlot = id;
@@ -384,7 +416,6 @@
             if(!activePet.fruits) activePet.fruits = [];
             if(!activePet.words) activePet.words = [];
 
-            // Default time: 20 min
             resetSession(true);
             setTime(20, document.querySelector('.btn-time.active'));
 
@@ -510,7 +541,9 @@
                 const unlocked = activePet.fruits.includes(item.id);
                 const d = document.createElement('div');
                 d.className = unlocked ? "fruit-card unlocked" : "fruit-card locked";
-                d.innerHTML = `<span class="fruit-icon">${unlocked?item.icon:"❓"}</span><span class="fruit-name">${unlocked?item.name:"???"}</span>`;
+                d.innerHTML = `<span class="fruit-icon">${unlocked?item.icon:"❓"}</span>
+                               <span class="fruit-name">${unlocked?item.name:"???"}</span>
+                               ${unlocked ? `<span class="fruit-desc">${item.desc}</span>` : ''}`;
                 g.appendChild(d);
             });
         }

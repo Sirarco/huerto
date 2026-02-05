@@ -3,588 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Focus Garden V17</title>
+    <title>Focus Garden V30: Sakura Valley</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Noto+Serif+JP:wght@600&family=Mochiy+Pop+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Mochiy+Pop+One&family=Noto+Serif+JP:wght@600&display=swap');
 
         :root {
-            --bg-color: #FFFDF5;
-            --primary-color: #A5D6A7; 
-            --primary-dark: #66BB6A;
-            --accent-color: #F48FB1;
-            --accent-dark: #EC407A;
-            --text-color: #4E342E;
-            --card-bg: #FFFFFF;
+            --bg-body: #FCE4EC;
+            --primary: #A5D6A7;
+            --accent: #F06292;
+            --text-main: #4A148C;
+            --white: #FFFFFF;
         }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#EFEBE9 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: var(--text-color);
+            background-color: var(--bg-body);
+            /* Patrón de fondo sutil */
+            background-image: radial-gradient(#F48FB1 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
             margin: 0; display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; flex-direction: column; overflow-x: hidden;
-            transition: background 1s ease;
+            min-height: 100vh; flex-direction: column; overflow: hidden;
         }
 
-        .screen {
-            background: var(--card-bg); padding: 1.5rem; border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(78, 52, 46, 0.08); text-align: center;
-            max-width: 650px; width: 95%; position: relative; z-index: 10;
-            border: 4px solid #fff; outline: 3px solid #Fce4ec;
-            margin: 10px 0;
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .app-container {
+            background: var(--white);
+            width: 95%; max-width: 700px; /* Un poco más ancho para el paisaje */
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(74, 20, 140, 0.15);
+            border: 5px solid #fff;
+            outline: 3px solid #F8BBD0;
+            position: relative;
+            transition: all 0.3s ease;
         }
         .hidden { display: none !important; }
 
-        h1, h2, h3 { font-family: 'Mochiy Pop One', sans-serif; color: var(--accent-dark); letter-spacing: 1px; margin: 0.5rem 0;}
+        h1, h2, h3 { font-family: 'Mochiy Pop One', sans-serif; color: #880E4F; text-align: center; margin: 10px 0; }
 
-        /* --- BOTONES PULIDOS --- */
-        .btn {
-            border: none; padding: 10px 24px; border-radius: 50px;
-            font-size: 0.9rem; cursor: pointer; font-weight: 700;
-            transition: all 0.2s; margin: 5px; 
-            font-family: 'Quicksand', sans-serif; 
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn:active { transform: scale(0.95); }
-
-        /* Botón Principal (Relleno) */
-        .btn-primary { 
-            background-color: var(--accent-color); color: #fff; 
-            box-shadow: 0 4px 10px rgba(244, 143, 177, 0.4);
-        }
-        .btn-primary:hover { background-color: var(--accent-dark); transform: translateY(-2px); }
-
-        /* Botón Secundario (Borde Suave) - "Ver Palabra" / "Cerrar" */
-        .btn-outline { 
-            background: transparent; 
-            border: 2px solid var(--accent-color); 
-            color: var(--accent-dark);
-            box-shadow: none;
-        }
-        .btn-outline:hover { 
-            background: #FFF0F5; /* Fondo rosado muy suave */
-            border-color: var(--accent-dark);
+        /* --- JARDÍN (ESCENARIO) --- */
+        .garden-display {
+            height: 320px; position: relative;
+            /* CIELO ROSA/VIOLETA (Como la referencia) */
+            background: linear-gradient(180deg, #F06292 0%, #AB47BC 60%, #5E35B1 100%);
+            border-radius: 25px; overflow: hidden;
+            border: 4px solid #fff; 
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
         }
 
-        /* Botón Cerrar Pequeño (Para Overlays) */
-        .btn-close {
-            background: #f5f5f5; color: #888; 
-            border: 1px solid #ddd; padding: 5px 15px; border-radius: 20px;
-            font-size: 0.8rem;
+        .garden-display.fullscreen-active {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            border-radius: 0; border: none; margin: 0; z-index: 10000;
         }
-        .btn-close:hover { background: #ffebee; color: var(--accent-color); border-color: var(--accent-color); }
 
-        .btn-home { 
-            background: #fff; color: var(--accent-color); 
-            border: 2px solid #eee; width: 45px; height: 45px; border-radius: 50%; 
-            cursor: pointer; font-size: 1.4rem; 
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.05); transition: 0.2s;
+        /* --- CAPAS DEL PAISAJE (SVG ART) --- */
+        
+        /* 1. SOL/LUNA */
+        .celestial-orb {
+            position: absolute; top: 30px; right: 30px;
+            width: 70px; height: 70px; border-radius: 50%;
+            background: #FFF; 
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            z-index: 1; opacity: 0.9;
         }
-        .btn-home:hover { transform: scale(1.1); border-color: var(--accent-color); }
 
-        /* --- HEADER --- */
-        .header-area {
-            display: flex; flex-direction: row; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
+        /* 2. NUBES (Estilo Vectorial) */
+        .clouds-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+        .vector-cloud {
+            position: absolute; width: 100px; height: 40px;
+            background: rgba(255,255,255,0.4); border-radius: 50px;
+            animation: floatCloud 60s infinite linear;
         }
-        .header-title-box { display: flex; align-items: center; gap: 10px; }
-        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-
-        .btn-menu { 
-            padding: 6px 12px; font-size: 0.8rem; border-radius: 15px; 
-            background: #fff; color: var(--text-color); 
-            border: 2px solid #E0F2F1; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; gap: 5px; transition: transform 0.2s;
+        .vector-cloud::after {
+            content: ''; position: absolute; top: -20px; left: 15px;
+            width: 40px; height: 40px; background: rgba(255,255,255,0.4); border-radius: 50%;
         }
-        .btn-menu:hover { transform: translateY(-2px); border-color: var(--primary-color); background: #F1F8E9; }
+        @keyframes floatCloud { from { transform: translateX(-150px); } to { transform: translateX(800px); } }
 
-        /* --- JARDÍN --- */
-        .garden-scene {
-            height: 240px; position: relative;
-            background: linear-gradient(to top, #81d4fa 0%, #b3e5fc 100%);
-            border-radius: 20px; margin-bottom: 15px; overflow: hidden;
-            transition: background 1s ease; border: 4px solid #fff;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        /* 3. MONTAÑAS TRASERAS (Azuladas) */
+        .mountains-back {
+            position: absolute; bottom: 80px; width: 100%; height: 250px; z-index: 3;
+            background-repeat: no-repeat; background-position: bottom center; background-size: cover;
+            /* SVG Path Complejo */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%237E57C2' fill-opacity='0.8' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,160C960,139,1056,149,1152,160C1248,171,1344,181,1392,186.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        /* 4. MONTAÑAS MEDIAS (Violeta Oscuro) */
+        .mountains-mid {
+            position: absolute; bottom: 60px; width: 100%; height: 200px; z-index: 4;
+            background-repeat: no-repeat; background-position: bottom center; background-size: cover;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234527A0' fill-opacity='1' d='M0,224L80,213.3C160,203,320,181,480,192C640,203,800,245,960,234.7C1120,224,1280,160,1360,128L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        /* 5. LAGO (Tira horizontal) */
+        .lake-layer {
+            position: absolute; bottom: 30px; width: 100%; height: 60px; z-index: 5;
+            background: #7E57C2; opacity: 0.5;
+        }
+
+        /* 6. SUELO (Verde Brillante) */
+        .ground-layer {
+            position: absolute; bottom: 0; width: 100%; height: 60px; z-index: 6;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2366BB6A' fill-opacity='1' d='M0,288L48,272C96,256,192,224,288,213.3C384,203,480,213,576,229.3C672,245,768,267,864,261.3C960,256,1056,224,1152,208C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover; background-position: bottom;
+        }
+
+        /* 7. ARBOLES DECORATIVOS (Fondo) */
+        .deco-tree {
+            position: absolute; bottom: 20px; z-index: 6; opacity: 0.9;
+            font-size: 3rem; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.2));
+        }
+
+        /* --- ENTIDADES PRINCIPALES --- */
+        #tree-entity {
+            font-size: 7rem; position: absolute; bottom: 20px; left: 50%;
+            transform: translateX(-50%); transition: all 0.5s; z-index: 10;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
         }
         
-        .celestial-body { font-size: 3.5rem; position: absolute; top: 15px; right: 15px; transition: all 2s ease; z-index: 2; }
-        .clouds-layer, .stars-layer, .rain-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .cloud { position: absolute; font-size: 3rem; opacity: 0.8; animation: floatCloud 40s infinite linear; }
-        @keyframes floatCloud { from { transform: translateX(-50px); } to { transform: translateX(450px); } }
-        .star { position: absolute; color: #FFF; animation: twinkle 3s infinite ease-in-out; font-size: 1rem; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; transform: scale(1.2); } }
-        .rain-layer { background-image: repeating-linear-gradient(170deg, transparent, transparent 40px, rgba(255, 255, 255, 0.4) 40px, rgba(255, 255, 255, 0.4) 42px); opacity: 0; z-index: 5; background-size: 100% 200%; animation: rainFall 0.7s linear infinite; transition: opacity 2s; }
-        @keyframes rainFall { from {background-position: 0 0;} to {background-position: 0 100%;} }
-
-        #tree-display { font-size: 6rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: all 0.5s; z-index: 3; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
-        .harvest-pop { animation: popFruit 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popFruit { 0% { transform: translateX(-50%) scale(0); } 60% { transform: translateX(-50%) scale(1.2); } 100% { transform: translateX(-50%) scale(1); } }
-
-        #pet-container { position: absolute; bottom: 10px; left: 20%; cursor: pointer; z-index: 4; }
-        #pet-sprite { font-size: 3.5rem; display: block; transition: transform 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
-        .emote-bubble { position: absolute; top: -45px; right: -15px; background: white; padding: 5px 10px; border-radius: 15px; border: 2px solid var(--accent-color); font-size: 1.5rem; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 10; }
-        .emote-visible { opacity: 1; transform: translateY(0); }
-        .face-flip { transform: scaleX(-1); }
-        .jumping { animation: jumpAnim 0.5s ease; }
-        .spinning { animation: spinAnim 0.6s ease; }
-        @keyframes jumpAnim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
-        @keyframes spinAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- CONTADOR --- */
-        .timer-container {
-            margin: 10px 0 20px 0; padding: 10px; background: #FFF8E1; border-radius: 20px;
-            border: 2px solid #FFE0B2; display: inline-block; min-width: 200px;
+        #pet-container { position: absolute; bottom: 15px; left: 20%; cursor: pointer; z-index: 12; transition: left 0.5s linear; }
+        #pet-visual { 
+            font-size: 3.5rem; display: block; transition: transform 0.2s; 
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
         }
-        .timer-display { font-size: 3.5rem; font-weight: 700; color: var(--accent-dark); margin: 0; font-family: 'Mochiy Pop One', sans-serif; letter-spacing: 2px; line-height: 1; }
-
-        /* --- CONTROLES TIEMPO --- */
-        .time-controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .btn-time {
-            background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 6px 14px;
-            font-size: 0.85rem; cursor: pointer; color: #777; transition: 0.2s;
+        .bubble {
+            position: absolute; top: -50px; left: 10px; background: white;
+            padding: 5px 12px; border-radius: 15px; font-size: 1.5rem;
+            opacity: 0; transition: 0.3s; pointer-events: none; border: 2px solid var(--accent);
+            z-index: 20;
         }
-        .btn-time:hover { border-color: var(--primary-color); color: var(--primary-color); }
-        .btn-time.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 3px 6px rgba(165, 214, 167, 0.4); }
+        .bubble.show { opacity: 1; transform: translateY(-10px); }
 
-        .action-area { display: flex; justify-content: center; gap: 10px; margin-top: 5px; }
-        .btn-reset { background: #ECEFF1; color: #555; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-reset:hover { background: #CFD8DC; transform: rotate(180deg); }
-
-        /* --- SLOTS --- */
-        .slot-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-        .save-slot {
-            width: 100px; height: 110px; border-radius: 18px; border: 3px dashed #CFD8DC;
-            background: #FAFAFA; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s; position: relative;
+        /* TIMER FLOTANTE (Glassmorphism) */
+        .timer-overlay {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(5px);
+            padding: 5px 25px; border-radius: 30px; font-family: 'Mochiy Pop One', sans-serif;
+            font-size: 2.5rem; color: #fff; z-index: 30; border: 1px solid rgba(255,255,255,0.4);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .save-slot.occupied { border: 3px solid var(--primary-color); background: #F1F8E9; border-style: solid;}
-        .delete-btn { position: absolute; top: -8px; right: -8px; background: #FF5252; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; z-index: 5; }
+
+        /* ANIMACIONES */
+        .pop { animation: pop 0.6s ease; }
+        .bounce { animation: bounce 0.5s infinite alternate; }
+        .flip { transform: scaleX(-1); }
+        @keyframes pop { 0% { transform: translateX(-50%) scale(0); } 70% { transform: translateX(-50%) scale(1.2); } 100% { transform: translateX(-50%) scale(1); } }
+        @keyframes bounce { to { transform: translateY(-5px); } }
+
+        /* --- BOTONES --- */
+        .btn-main {
+            background: #E91E63; color: white; border: none; cursor: pointer;
+            padding: 12px 30px; border-radius: 50px; font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(233, 30, 99, 0.4); display: block; margin: 15px auto;
+            font-family: 'Quicksand', sans-serif; font-weight: 700;
+        }
+        .btn-main:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        .btn-fs { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; width: 32px; height: 32px; z-index: 50; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff; cursor: pointer; border: none;}
+        .btn-fs:hover { background: rgba(255,255,255,0.8); color: #333; }
+
+        /* UI ELEMENTS */
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .toolbar { display: flex; gap: 5px; }
+        .btn-menu { padding: 5px 10px; background: #fff; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; }
+        .btn-time { background: #fff; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; cursor: pointer; color: #777; font-weight: bold; }
+        .btn-time.active { background: #AB47BC; color: white; border-color: #AB47BC; }
+        .time-controls { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
+
+        /* CREATOR & SLOTS */
         .pet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .pet-card { border: 2px solid #F5F5F5; border-radius: 15px; padding: 8px; cursor: pointer; background: #fff; }
-        .pet-card.selected { border-color: var(--accent-color); background-color: #FCE4EC; transform: scale(1.1); }
-        .pet-icon-select { font-size: 2.2rem; display: block; }
-        .color-options { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .pet-card { border: 2px solid #F0F0F0; border-radius: 15px; padding: 10px; cursor: pointer; background: #fff; text-align: center; font-size: 2rem;}
+        .pet-card.selected { border-color: #E91E63; background-color: #F8BBD0; transform: scale(1.1); }
+        
+        .color-options { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
         .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .color-dot.active { border-color: var(--text-color); transform: scale(1.2); }
-        input[type="text"] { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid var(--primary-color); font-size: 1rem; outline: none; box-sizing: border-box; background: #fff; margin-bottom: 12px; text-align: center; }
+        .color-dot.active { border-color: #880E4F; transform: scale(1.2); }
+        
+        input { width: 100%; padding: 12px; border: 2px solid #F48FB1; border-radius: 15px; font-size: 1rem; text-align: center; box-sizing: border-box; outline: none; }
 
-        /* --- OVERLAYS --- */
-        .overlay-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FFFDF5; border-radius: 25px; z-index: 100; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; flex: 1; margin-top: 5px; padding: 5px; }
+        .slots-wrapper { display: flex; gap: 15px; justify-content: center; margin: 30px 0; flex-wrap: wrap; }
+        .save-slot { width: 100px; height: 120px; background: #FAFAFA; border: 3px dashed #CCC; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .save-slot.occupied { border: 3px solid #AB47BC; background: #F3E5F5; border-style: solid; }
+        .delete-btn { position: absolute; top: -10px; right: -10px; background: #EF5350; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
 
-        /* --- HUERTO (FRUTAS) --- */
-        .fruit-card {
-            background-color: #F1F8E9; border-radius: 12px; padding: 12px; text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid #C5E1A5; 
-            transition: transform 0.2s; position: relative; display: flex; flex-direction: column; align-items: center;
-        }
-        .fruit-card.locked { opacity: 0.6; background: #FAFAFA; border-color: #EEE; border-style: dashed; }
-        .fruit-card.locked .fruit-icon { filter: grayscale(100%) opacity(0.5); }
-        .fruit-card.unlocked:hover { transform: translateY(-3px); border-color: var(--primary-dark); }
-        .fruit-icon { font-size: 2.5rem; display: block; margin-bottom: 5px; }
-        .fruit-name { font-weight: bold; font-size: 0.9rem; color: #33691E; }
-        .fruit-desc { font-size: 0.75rem; color: #558B2F; margin-top: 4px; line-height: 1.2; }
+        /* OVERLAYS */
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #FFFDF5; z-index: 100; border-radius: 25px; padding: 20px; box-sizing: border-box; }
+        .grid-box { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; overflow-y: auto; height: 90%; margin-top: 10px;}
+        .item-card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; text-align: center; }
 
-        /* --- BITÁCORA (JAPONÉS) --- */
-        .oriental-card {
-            background-color: #FFEBEE;
-            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
-            border-radius: 8px; padding: 15px 10px; text-align: center; position: relative;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.05); border-left: 5px solid #EF9A9A;
-            min-height: 120px; display: flex; flex-direction: column; justify-content: center;
-        }
-        .oriental-card.locked { opacity: 0.5; border-left-color: #ccc; background: #F5F5F5; }
-        .jp-block { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
-        .jp-char { font-family: 'Noto Serif JP', serif; font-size: 1.6rem; color: #C62828; font-weight: bold; line-height: 1.2; }
-        .jp-read { font-size: 0.75rem; color: #555; font-style: italic; }
-        .jp-meaning { font-size: 0.85rem; color: #880E4F; font-weight: 500; }
-
-        /* --- KANBAN --- */
-        .kanban-board { display: flex; gap: 10px; overflow-x: auto; height: 100%; margin-top: 10px; }
-        .kanban-col { flex: 1; min-width: 140px; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; }
-        .col-todo { background: #FFF3E0; } .col-doing { background: #E3F2FD; } .col-done { background: #E8F5E9; }
-        .task-card { background: white; padding: 12px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 0.9rem; cursor: pointer; border-left: 4px solid var(--accent-color); }
-
-        /* DEV TOOLS */
-        #dev-panel { position: fixed; bottom: 5px; left: 5px; background: rgba(0,0,0,0.8); padding: 5px; border-radius: 5px; z-index: 2000; display: flex; gap: 5px; opacity: 0.3; transition: opacity 0.3s; }
-        #dev-panel:hover { opacity: 1; }
-        .dev-btn { background: #333; color: #fff; border: none; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; }
-
-        @media (max-width: 480px) {
-            .header-area { flex-direction: column; align-items: center; gap: 10px; }
-            .toolbar { width: 100%; justify-content: center; }
-            .garden-scene { height: 220px; }
-            .timer-display { font-size: 2.8rem; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="dev-panel">
-        <button class="dev-btn" onclick="devAdd(-60)">-1m</button>
-        <button class="dev-btn" onclick="devAdd(60)">+1m</button>
-        <button class="dev-btn" onclick="devAdd(300)">+5m</button>
-    </div>
+    <div class="app-container" id="app">
+        
+        <div id="screen-slots">
+            <h1>🌸 Focus Garden</h1>
+            <p style="text-align:center; color:#880E4F;">Selecciona tu jardín</p>
+            <div class="slots-wrapper" id="slots-render"></div>
+        </div>
 
-    <div id="setup-screen" class="screen">
-        <h1>🌱 Focus Garden</h1>
-        <p>Elige tu partida:</p>
-        <div class="slot-container" id="slots-area"></div>
-
-        <div id="profile-form" class="hidden" style="margin-top:20px; border-top:2px dashed #EEE; padding-top:15px;">
-            <h3>Nueva Mascota</h3>
+        <div id="screen-create" class="hidden">
+            <button class="btn-menu" onclick="renderSlotsScreen()" style="margin-bottom:10px;">← Volver</button>
+            <h2>Nuevo Habitante</h2>
+            
             <div class="pet-grid">
-                <div class="pet-card" onclick="selectPet('cat')" id="card-cat"><span class="pet-icon-select">🐱</span></div>
-                <div class="pet-card" onclick="selectPet('dog')" id="card-dog"><span class="pet-icon-select">🐶</span></div>
-                <div class="pet-card" onclick="selectPet('fox')" id="card-fox"><span class="pet-icon-select">🦊</span></div>
-                <div class="pet-card" onclick="selectPet('bunny')" id="card-bunny"><span class="pet-icon-select">🐰</span></div>
+                <div class="pet-card selected" onclick="setDraftPet('cat', this)" data-type="cat">🐱</div>
+                <div class="pet-card" onclick="setDraftPet('dog', this)" data-type="dog">🐶</div>
+                <div class="pet-card" onclick="setDraftPet('fox', this)" data-type="fox">🦊</div>
+                <div class="pet-card" onclick="setDraftPet('bunny', this)" data-type="bunny">🐰</div>
             </div>
+            
             <div class="color-options">
-                <div class="color-dot active" style="background:#FFA726;" onclick="selectColor('none', this)"></div>
-                <div class="color-dot" style="background:#fff;" onclick="selectColor('brightness(2) grayscale(0.5)', this)"></div>
-                <div class="color-dot" style="background:#607D8B;" onclick="selectColor('grayscale(100%) brightness(0.8) sepia(0.2) hue-rotate(180deg)', this)"></div>
-                <div class="color-dot" style="background:#5D4037;" onclick="selectColor('sepia(1) brightness(0.6)', this)"></div>
-                <div class="color-dot" style="background:#F5F5DC;" onclick="selectColor('sepia(0.5) brightness(1.2)', this)"></div>
+                <div class="color-dot active" onclick="setDraftColor('none', this)" style="background:#FFA726;"></div>
+                <div class="color-dot" onclick="setDraftColor('brightness(2) grayscale(0.5)', this)" style="background:#ECEFF1;"></div>
+                <div class="color-dot" onclick="setDraftColor('grayscale(100%) brightness(0.8) sepia(0.2) hue-rotate(180deg)', this)" style="background:#607D8B;"></div>
+                <div class="color-dot" onclick="setDraftColor('sepia(1) brightness(0.6)', this)" style="background:#5D4037;"></div>
+                <div class="color-dot" onclick="setDraftColor('sepia(0.5) brightness(1.2)', this)" style="background:#FFF9C4;"></div>
             </div>
-            <input type="text" id="pet-name-input" placeholder="Nombre (Ej. Hachiko)">
-            <button class="btn btn-primary" onclick="createProfile()">✨ Crear Huerto</button>
-        </div>
-    </div>
-
-    <div id="main-screen" class="screen hidden">
-        
-        <div class="header-area">
-            <div class="header-title-box">
-                <button class="btn-home" onclick="goHome()">🏠</button>
-                <h2 id="header-title" style="margin:0; margin-left: 10px;">Huerto</h2>
-            </div>
-            <div class="toolbar">
-                <button class="btn-menu" onclick="toggleOverlay('bitacora')"><span>📖</span> Bitácora</button>
-                <button class="btn-menu" onclick="toggleOverlay('huerto')"><span>🧺</span> Huerto</button>
-                <button class="btn-menu" onclick="toggleOverlay('kanban')"><span>📋</span> Tareas</button>
-            </div>
-        </div>
-        
-        <div class="garden-scene" id="garden-bg">
-            <div class="celestial-body" id="celestial">☀️</div>
-            <div class="stars-layer" id="stars" style="opacity:0"><div class="star" style="top:20%; left:20%">✨</div><div class="star" style="top:60%; left:80%">✨</div></div>
-            <div class="clouds-layer" id="clouds"><div class="cloud" style="top:20px;">☁️</div><div class="cloud" style="top:50px; left:50%; animation-duration:40s">☁️</div></div>
-            <div class="rain-layer" id="rain" style="opacity:0"></div>
             
-            <div id="tree-display">🌱</div>
-            
-            <div id="pet-container" onmouseenter="petInteract()" onmouseleave="petResume()">
-                <div class="emote-bubble" id="emote-bubble">❤️</div>
-                <div id="pet-sprite">🐱</div>
+            <input type="text" id="input-name" placeholder="Nombre de tu mascota">
+            <button class="btn-main" onclick="saveNewProfile()">✨ Crear Huerto</button>
+        </div>
+
+        <div id="screen-game" class="hidden">
+            <div class="header-bar">
+                <button class="btn-menu" onclick="exitGame()">🏠</button>
+                <h3 id="garden-title" style="margin:0; font-size:1rem;">Huerto</h3>
+                <div class="toolbar">
+                    <button class="btn-menu" onclick="openOverlay('inventory')">🧺</button>
+                    <button class="btn-menu" onclick="openOverlay('journal')">📖</button>
+                </div>
+            </div>
+
+            <div class="garden-display" id="garden-view">
+                
+                <div class="celestial-orb"></div>
+                <div class="clouds-container">
+                    <div class="vector-cloud" style="top:30px; left:10%"></div>
+                    <div class="vector-cloud" style="top:80px; left:60%; width:80px; animation-duration:80s"></div>
+                </div>
+
+                <div class="mountains-back"></div>
+                <div class="mountains-mid"></div>
+                <div class="lake-layer"></div>
+                <div class="ground-layer"></div>
+
+                <div class="deco-tree" style="left:5%">🌸</div>
+                <div class="deco-tree" style="right:10%">🌲</div>
+                <div class="deco-tree" style="right:25%; font-size:2rem">🌲</div>
+
+                <div id="tree-entity">🌱</div>
+                
+                <div id="pet-container" onclick="interactPet()">
+                    <span id="pet-visual">🐱</span>
+                    <div class="bubble" id="pet-bubble">❤️</div>
+                </div>
+
+                <div class="timer-overlay" id="timer-text">20:00</div>
+                <button class="btn-fs" onclick="toggleFullView()">⛶</button>
+            </div>
+
+            <div style="text-align:center; margin-top:15px;">
+                <div class="time-controls">
+                    <button class="btn-time" onclick="setDuration(5, this)">5m</button>
+                    <button class="btn-time active" onclick="setDuration(20, this)">20m</button>
+                    <button class="btn-time" onclick="setDuration(45, this)">45m</button>
+                </div>
+                <button class="btn-main" id="btn-start" onclick="toggleTimerAction()">Comenzar</button>
+            </div>
+
+            <div id="overlay-inventory" class="overlay hidden">
+                <div style="display:flex; justify-content:space-between;"><h3>Huerto</h3><button class="btn-menu" onclick="closeOverlays()">X</button></div>
+                <div class="grid-box" id="grid-fruit"></div>
+            </div>
+            <div id="overlay-journal" class="overlay hidden">
+                <div style="display:flex; justify-content:space-between;"><h3>Bitácora</h3><button class="btn-menu" onclick="closeOverlays()">X</button></div>
+                <div class="grid-box" id="grid-words"></div>
             </div>
         </div>
 
-        <div class="timer-container">
-            <div class="timer-display" id="timer">20:00</div>
-        </div>
-
-        <div class="time-controls" id="time-controls">
-            <button class="btn-time" onclick="setTime(5, this)">5m</button>
-            <button class="btn-time" onclick="setTime(10, this)">10m</button>
-            <button class="btn-time" onclick="setTime(15, this)">15m</button>
-            <button class="btn-time active" onclick="setTime(20, this)">20m</button>
-        </div>
-        
-        <div class="action-area">
-            <button class="btn-reset" onclick="resetSession()" title="Reiniciar">↺</button>
-            <button class="btn-primary" id="btn-action" onclick="toggleTimer()">Comenzar</button>
-        </div>
-        
-        <div id="reward-area" class="hidden" style="margin-top:15px; animation: popFruit 0.5s;">
-            <h3 style="color:var(--accent-dark)">¡Cosecha Doble! 🌸</h3>
-            <p>Has ganado una fruta y una palabra nueva.</p>
-            <div style="display:flex; justify-content:center; gap:10px;">
-                <button class="btn btn-outline" onclick="toggleOverlay('huerto')">🍎 Ver Fruta</button>
-                <button class="btn btn-outline" onclick="toggleOverlay('bitacora')">📖 Ver Palabra</button>
-            </div>
-        </div>
-
-        <div id="kanban-overlay" class="overlay-panel hidden">
-            <div class="overlay-header"><h3>📋 Tareas</h3><button class="btn-close" onclick="toggleOverlay('kanban')">Cerrar</button></div>
-            <div style="display:flex; gap:5px; margin:10px 0;"><input type="text" id="task-input" placeholder="Nueva tarea..."><button class="btn btn-primary" onclick="addTask()">+</button></div>
-            <div class="kanban-board">
-                <div class="kanban-col col-todo"><h4>Por Hacer</h4><div id="col-todo"></div></div>
-                <div class="kanban-col col-doing"><h4>Haciendo</h4><div id="col-doing"></div></div>
-                <div class="kanban-col col-done"><h4>Hecho</h4><div id="col-done"></div></div>
-            </div>
-        </div>
-
-        <div id="huerto-overlay" class="overlay-panel hidden">
-            <div class="overlay-header"><h3>🧺 Mi Huerto</h3><button class="btn-close" onclick="toggleOverlay('huerto')">Cerrar</button></div>
-            <div class="grid-container" id="huerto-list"></div>
-        </div>
-
-        <div id="bitacora-overlay" class="overlay-panel hidden">
-            <div class="overlay-header"><h3>📖 Bitácora Zen</h3><button class="btn-close" onclick="toggleOverlay('bitacora')">Cerrar</button></div>
-            <div class="grid-container" id="bitacora-list"></div>
-        </div>
     </div>
 
     <script>
-        // --- DATOS CON CURIOSIDADES ---
-        const harvestDB = [
-            { id: 0, icon: "🍎", name: "Manzana", desc: "Flotan porque son 25% aire." }, 
-            { id: 1, icon: "🍋", name: "Limón", desc: "Tienen más azúcar que las fresas." },
-            { id: 2, icon: "🍇", name: "Uvas", desc: "Explotan en el microondas." }, 
-            { id: 3, icon: "🍒", name: "Cerezas", desc: "Ayudan a dormir mejor." },
-            { id: 4, icon: "🍑", name: "Durazno", desc: "Relacionados con las almendras." }, 
-            { id: 5, icon: "🍓", name: "Fresa", desc: "La única con semillas por fuera." },
-            { id: 6, icon: "🌻", name: "Girasol", desc: "Siguen al sol (Heliotropismo)." }, 
-            { id: 7, icon: "🌷", name: "Tulipán", desc: "Sus bulbos son comestibles." },
-            { id: 8, icon: "🍍", name: "Piña", desc: "Tarda 2 años en crecer." }, 
-            { id: 9, icon: "🍉", name: "Sandía", desc: "Es 92% agua pura." },
-            { id: 10, icon: "🥑", name: "Aguacate", desc: "Es una fruta, no verdura." }, 
-            { id: 11, icon: "🥕", name: "Zanahoria", desc: "Antes eran moradas, no naranjas." }
+        const DB_KEY = 'fg_sakura_v30';
+        const PET_EMOJIS = { 'cat': '🐱', 'dog': '🐶', 'fox': '🦊', 'bunny': '🐰' };
+        const FRUITS = [
+            {icon:'🍎', name:'Manzana'}, {icon:'🍋', name:'Limón'}, {icon:'🍇', name:'Uvas'},
+            {icon:'🍒', name:'Cerezas'}, {icon:'🍓', name:'Fresa'}, {icon:'🌻', name:'Girasol'},
+            {icon:'🌷', name:'Tulipán'}, {icon:'🍍', name:'Piña'}
         ];
-        const jpWords = [
-            { id: 0, jp: "木漏れ日", read: "Komorebi", es: "Luz entre hojas" }, 
-            { id: 1, jp: "生き甲斐", read: "Ikigai", es: "Propósito de vida" },
-            { id: 2, jp: "侘寂", read: "Wabi-sabi", es: "Belleza imperfecta" }, 
-            { id: 3, jp: "森林浴", read: "Shinrin-yoku", es: "Baño de bosque" },
-            { id: 4, jp: "我慢", read: "Gaman", es: "Paciencia digna" }, 
-            { id: 5, jp: "浮世", read: "Ukiyo", es: "Vivir el momento" },
-            { id: 6, jp: "幽玄", read: "Yugen", es: "Profundidad misteriosa" }, 
-            { id: 7, jp: "積ん読", read: "Tsundoku", es: "Acumular libros" }
+        const WORDS = [
+            {jp:'木漏れ日', m:'Luz entre hojas'}, {jp:'生き甲斐', m:'Propósito'}, {jp:'侘寂', m:'Belleza simple'}
         ];
+        const TREE_STAGES = ['🌱','🌱','🌿','🌿','🌳','🌳','🌸','🌸'];
 
-        const petEmojis = {'cat':'🐱', 'dog':'🐶', 'bunny':'🐰', 'fox':'🦊'};
-        const treeStages = ['🌱','🌱','🌿','🌿','🎋','🌳','🌳','🌸','🌸'];
+        let slots = [null, null, null];
+        let currentSlot = -1;
+        let draftType = 'cat';
+        let draftFilter = 'none';
         
-        let slotsData = { 1:null, 2:null, 3:null };
-        let activeSlot = null;
-        let activePet = { type:'cat', name:'', filter:'none', fruits:[], words:[] };
-        let timer = { total: 20*60, left: 20*60, interval: null }; 
-        let petAI = { interval: null, moving: true };
-        let sessionActive = true; 
+        let timer = null;
+        let timeLeft = 20 * 60;
+        let totalTime = 20 * 60;
+        let isRunning = false;
+        let petInterval = null;
 
-        window.onload = function() {
-            if(localStorage.getItem('fg_v17_slots')) slotsData = JSON.parse(localStorage.getItem('fg_v17_slots'));
-            updateSlotsUI();
+        window.onload = () => {
+            if(localStorage.getItem(DB_KEY)) slots = JSON.parse(localStorage.getItem(DB_KEY));
+            renderSlotsScreen();
+            requestNotification();
         };
 
-        function updateSlotsUI() {
-            const container = document.getElementById('slots-area'); container.innerHTML = "";
-            for(let i=1; i<=3; i++) {
-                const data = slotsData[i];
-                const div = document.createElement('div');
-                if(data) {
-                    div.className = "save-slot occupied";
-                    div.innerHTML = `<button class="delete-btn" onclick="deleteSlot(${i}, event)">✕</button>
-                        <span class="slot-icon" style="filter:${data.filter}">${petEmojis[data.type]}</span>
-                        <span class="slot-name">${data.name}</span>`;
-                    div.onclick = () => loadGame(i);
+        function requestNotification() {
+            if (Notification.permission !== "granted") Notification.requestPermission();
+        }
+
+        // --- SLOT SYSTEM ---
+        function renderSlotsScreen() {
+            document.getElementById('screen-slots').classList.remove('hidden');
+            document.getElementById('screen-create').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            const c = document.getElementById('slots-render');
+            c.innerHTML = '';
+            slots.forEach((s, i) => {
+                const d = document.createElement('div');
+                d.className = s ? 'save-slot occupied' : 'save-slot';
+                if(s) {
+                    d.innerHTML = `<div class="delete-btn" onclick="deleteSlot(${i}, event)">✕</div>
+                    <span style="font-size:2.5rem; filter:${s.filter}">${PET_EMOJIS[s.type]}</span>
+                    <span style="font-size:0.8rem; font-weight:bold">${s.name}</span>`;
+                    d.onclick = () => loadGame(i);
                 } else {
-                    div.className = "save-slot";
-                    div.innerHTML = `<span style="font-size:2rem; color:#CFD8DC;">+</span>`;
-                    div.onclick = () => showCreateForm(i);
+                    d.innerHTML = `<span style="font-size:2rem; color:#ccc">+</span>`;
+                    d.onclick = () => openCreator(i);
                 }
-                container.appendChild(div);
-            }
-        }
-        function deleteSlot(id, e) { e.stopPropagation(); if(confirm("¿Borrar partida?")) { slotsData[id]=null; save(); updateSlotsUI(); } }
-        function save() { localStorage.setItem('fg_v17_slots', JSON.stringify(slotsData)); }
-
-        function showCreateForm(id) {
-            activeSlot = id;
-            document.getElementById('pet-name-input').value = "";
-            activePet = { type:'cat', name:'', filter:'none', fruits:[], words:[] };
-            selectPet('cat');
-            document.getElementById('profile-form').classList.remove('hidden');
-            document.getElementById('profile-form').scrollIntoView({behavior:'smooth'});
+                c.appendChild(d);
+            });
         }
 
-        function createProfile() {
-            const name = document.getElementById('pet-name-input').value;
-            if(!name.trim()) return alert("¡Nombre necesario!");
-            activePet.name = name;
-            slotsData[activeSlot] = activePet;
-            save();
-            loadGame(activeSlot);
+        function deleteSlot(i, e) {
+            e.stopPropagation();
+            if(confirm("¿Borrar?")) { slots[i] = null; localStorage.setItem(DB_KEY, JSON.stringify(slots)); renderSlotsScreen(); }
         }
 
-        function loadGame(id) {
-            activeSlot = id; activePet = slotsData[id];
-            if(!activePet.fruits) activePet.fruits = [];
-            if(!activePet.words) activePet.words = [];
-
-            resetSession(true);
-            setTime(20, document.querySelector('.btn-time.active'));
-
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('main-screen').classList.remove('hidden');
-            document.getElementById('header-title').innerText = `Huerto de ${activePet.name}`;
-            document.getElementById('reward-area').classList.add('hidden');
-            document.getElementById('action-area').classList.remove('hidden');
+        // --- CREATION ---
+        function openCreator(i) {
+            currentSlot = i;
+            draftType = 'cat'; draftFilter = 'none';
+            document.getElementById('input-name').value = '';
             
-            const sprite = document.getElementById('pet-sprite');
-            sprite.innerText = petEmojis[activePet.type];
-            sprite.style.filter = activePet.filter;
+            document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector('[data-type="cat"]').classList.add('selected');
+            document.querySelectorAll('.color-dot').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.color-dot')[0].classList.add('active');
 
-            startPetLife();
-            renderHuerto(); renderBitacora();
+            document.getElementById('screen-slots').classList.add('hidden');
+            document.getElementById('screen-create').classList.remove('hidden');
         }
 
-        function goHome() { if(confirm("¿Volver al menú?")) location.reload(); }
+        function setDraftPet(t, el) { 
+            draftType = t; 
+            document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        function setDraftColor(f, el) { 
+            draftFilter = f; 
+            document.querySelectorAll('.color-dot').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+        }
 
-        function selectPet(t) { activePet.type=t; document.querySelectorAll('.pet-card').forEach(e=>e.classList.remove('selected')); document.getElementById('card-'+t).classList.add('selected'); }
-        function selectColor(f, el) { activePet.filter=f; document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+        function saveNewProfile() {
+            const name = document.getElementById('input-name').value;
+            if(!name.trim()) return alert("Nombre requerido");
+            slots[currentSlot] = { type: draftType, name: name, filter: draftFilter, inventory: [], journal: [] };
+            localStorage.setItem(DB_KEY, JSON.stringify(slots));
+            loadGame(currentSlot);
+        }
 
-        function setTime(min, btn) {
-            if(timer.interval && !confirm("¿Reiniciar cronómetro?")) return;
-            resetSession(true);
-            timer.total = min * 60;
-            timer.left = timer.total;
+        // --- GAME LOAD ---
+        function loadGame(i) {
+            currentSlot = i;
+            const data = slots[i];
+            
+            document.getElementById('screen-create').classList.add('hidden');
+            document.getElementById('screen-slots').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('garden-title').innerText = data.name;
+            
+            const vis = document.getElementById('pet-visual');
+            vis.innerText = PET_EMOJIS[data.type];
+            vis.style.filter = data.filter;
+
+            resetGameSession();
+            startPetAI();
+        }
+
+        function exitGame() {
+            clearInterval(timer); clearInterval(petInterval);
+            renderSlotsScreen();
+        }
+
+        // --- TIMER & CYCLES ---
+        function setDuration(m, btn) {
+            if(isRunning) return;
+            totalTime = m * 60; timeLeft = totalTime;
             updateVisuals();
             document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
         }
 
-        function toggleTimer() {
-            if(timer.interval) { 
-                clearInterval(timer.interval); 
-                timer.interval=null; 
-                document.getElementById('btn-action').innerText="Reanudar"; 
-            } else { 
-                if(!sessionActive) return; 
-                document.getElementById('btn-action').innerText="Pausar"; 
-                timer.interval = setInterval(tick, 1000); 
+        function toggleTimerAction() {
+            const btn = document.getElementById('btn-start');
+            if(btn.innerText === "Nueva Sesión") {
+                resetGameSession();
+                return;
+            }
+            if(isRunning) {
+                clearInterval(timer); isRunning = false;
+                btn.innerText = "Reanudar";
+            } else {
+                if(timeLeft <= 0) return;
+                timer = setInterval(tick, 1000); isRunning = true;
+                btn.innerText = "Pausar";
+                requestNotification();
             }
         }
-        
-        function tick() { 
-            timer.left--; 
-            updateVisuals(); 
-            if(timer.left<=0) finish(); 
-        }
 
-        function resetSession(silent = false) {
-            if(!silent && timer.interval && !confirm("¿Reiniciar sesión actual?")) return;
-            clearInterval(timer.interval);
-            timer.interval = null;
-            timer.left = timer.total;
-            sessionActive = true;
-            document.getElementById('btn-action').innerText = "Comenzar";
-            document.getElementById('btn-action').classList.remove('hidden');
-            document.getElementById('reward-area').classList.add('hidden');
-            document.getElementById('time-controls').classList.remove('hidden');
-            const tree = document.getElementById('tree-display');
-            tree.className = "";
-            updateVisuals();
+        function tick() {
+            timeLeft--; updateVisuals();
+            if(timeLeft <= 0) finish();
         }
 
         function updateVisuals() {
-            let t = timer.left < 0 ? 0 : timer.left;
-            const m = Math.floor(t/60).toString().padStart(2,'0');
-            const s = (t%60).toString().padStart(2,'0');
-            document.getElementById('timer').innerText = `${m}:${s}`;
-            
-            const prog = 1 - (t/timer.total);
-            
-            if(sessionActive) {
-                const idx = Math.min(Math.floor(prog*treeStages.length), treeStages.length-1);
-                const tree = document.getElementById('tree-display');
-                tree.innerText = treeStages[idx];
-                tree.className = "";
-                tree.style.transform = `translateX(-50%) scale(${1 + prog*0.6})`;
-            }
+            const m = Math.floor(timeLeft / 60).toString().padStart(2,'0');
+            const s = (timeLeft % 60).toString().padStart(2,'0');
+            document.getElementById('timer-text').innerText = `${m}:${s}`;
 
-            const bg = document.getElementById('garden-bg');
-            const rain = document.getElementById('rain');
-            const stars = document.getElementById('stars');
+            const p = 1 - (timeLeft / totalTime);
             
-            if(prog<0.3) { bg.style.background="linear-gradient(to top, #81d4fa, #E1F5FE)"; rain.style.opacity=0; stars.style.opacity=0; }
-            else if(prog<0.7) { 
-                bg.style.background="linear-gradient(to top, #FFCC80, #FFF3E0)"; 
-                rain.style.opacity=(prog>0.45 && prog<0.55)?0.6:0; 
-                stars.style.opacity=0; 
+            // Árbol
+            const tIdx = Math.min(Math.floor(p * TREE_STAGES.length), TREE_STAGES.length - 1);
+            const tree = document.getElementById('tree-entity');
+            if(tree.innerText !== TREE_STAGES[tIdx]) {
+                tree.innerText = TREE_STAGES[tIdx];
+                tree.classList.remove('pop'); void tree.offsetWidth; tree.classList.add('pop');
             }
-            else { bg.style.background="linear-gradient(to top, #3949AB, #1A237E)"; rain.style.opacity=0; stars.style.opacity=1; }
+            tree.style.transform = `translateX(-50%) scale(${1 + p*0.5})`;
         }
 
         function finish() {
-            clearInterval(timer.interval); 
-            timer.interval = null;
-            sessionActive = false; 
-            document.getElementById('btn-action').classList.add('hidden');
-            document.getElementById('time-controls').classList.add('hidden');
+            clearInterval(timer); isRunning = false;
+            const btn = document.getElementById('btn-start');
+            btn.innerText = "Nueva Sesión";
+            btn.style.background = "#FF9800";
 
-            const fruitID = Math.floor(Math.random() * harvestDB.length);
-            if(!activePet.fruits.includes(fruitID)) activePet.fruits.push(fruitID);
+            if(Notification.permission === "granted") new Notification("¡Cosecha Lista!");
+
+            const fruit = FRUITS[Math.floor(Math.random() * FRUITS.length)];
+            const word = WORDS[Math.floor(Math.random() * WORDS.length)];
             
-            const wordID = Math.floor(Math.random() * jpWords.length);
-            if(!activePet.words.includes(wordID)) activePet.words.push(wordID);
+            const data = slots[currentSlot];
+            if(!data.inventory.some(f => f.name === fruit.name)) data.inventory.push(fruit);
+            if(!data.journal.some(w => w.jp === word.jp)) data.journal.push(word);
+            localStorage.setItem(DB_KEY, JSON.stringify(slots));
+
+            const tree = document.getElementById('tree-entity');
+            tree.innerText = fruit.icon;
+            tree.classList.add('pop');
             
-            save();
-
-            const tree = document.getElementById('tree-display');
-            tree.innerText = harvestDB[fruitID].icon; 
-            tree.classList.add('harvest-pop');
-
-            setTimeout(() => {
-                document.getElementById('reward-area').classList.remove('hidden');
-                renderHuerto(); renderBitacora();
-            }, 500);
+            alert(`¡Completado!\nCosechaste: ${fruit.name}\n${word.jp} (${word.m})`);
         }
 
-        function renderHuerto() {
-            const g = document.getElementById('huerto-list'); g.innerHTML = "";
-            harvestDB.forEach(item => {
-                const unlocked = activePet.fruits.includes(item.id);
-                const d = document.createElement('div');
-                d.className = unlocked ? "fruit-card unlocked" : "fruit-card locked";
-                d.innerHTML = `<span class="fruit-icon">${unlocked?item.icon:"❓"}</span>
-                               <span class="fruit-name">${unlocked?item.name:"???"}</span>
-                               ${unlocked ? `<span class="fruit-desc">${item.desc}</span>` : ''}`;
-                g.appendChild(d);
-            });
-        }
-        function renderBitacora() {
-            const g = document.getElementById('bitacora-list'); g.innerHTML = "";
-            jpWords.forEach(item => {
-                const unlocked = activePet.words.includes(item.id);
-                const d = document.createElement('div');
-                d.className = unlocked ? "oriental-card" : "oriental-card locked";
-                d.innerHTML = unlocked ? 
-                    `<div class="jp-block"><span class="jp-char">${item.jp}</span><span class="jp-read">${item.read}</span></div><span class="jp-meaning">${item.es}</span>` 
-                    : `<span class="jp-char">?</span>`;
-                g.appendChild(d);
-            });
+        function resetGameSession() {
+            timeLeft = totalTime;
+            isRunning = false;
+            clearInterval(timer);
+            
+            const btn = document.getElementById('btn-start');
+            btn.innerText = "Comenzar";
+            btn.style.background = "#E91E63";
+            
+            document.getElementById('tree-entity').innerText = TREE_STAGES[0];
+            updateVisuals();
         }
 
-        function toggleOverlay(id) {
-             const el = document.getElementById(id+'-overlay');
-             const wasVisible = !el.classList.contains('hidden');
-             ['kanban', 'huerto', 'bitacora'].forEach(x => document.getElementById(x+'-overlay').classList.add('hidden'));
-             if(!wasVisible) el.classList.remove('hidden');
+        // --- PET AI ---
+        function startPetAI() {
+            if(petInterval) clearInterval(petInterval);
+            petInterval = setInterval(() => {
+                const pet = document.getElementById('pet-container');
+                const vis = document.getElementById('pet-visual');
+                const r = Math.random();
+                vis.classList.remove('bounce');
+                
+                if(r < 0.4) {
+                    const cl = parseFloat(pet.style.left || 20);
+                    const nl = 10 + Math.random() * 70;
+                    pet.style.left = nl + '%';
+                    vis.classList.add('bounce');
+                    if(nl < cl) vis.classList.add('flip'); else vis.classList.remove('flip');
+                } else if(r < 0.5) {
+                    showEmote(['🎵', '❤️', '💤', '❓'][Math.floor(Math.random()*4)]);
+                }
+            }, 2000);
         }
 
-        function devAdd(s) { timer.left -= s; updateVisuals(); if(timer.left<=0) finish(); }
-        function startPetLife() { petAI.interval = setInterval(petDecision, 2500); }
-        function petDecision() {
-            if(!petAI.moving) return;
-            const pet = document.getElementById('pet-container'); const sprite = document.getElementById('pet-sprite');
-            const r = Math.random(); pet.classList.remove('jumping','spinning');
-            if(r<0.45) {
-                const cur = parseFloat(pet.style.left||20); const dest = 10+Math.random()*70;
-                pet.style.transition = `left ${Math.abs(dest-cur)>30?1:3}s ease-in-out`; pet.style.left = dest+"%";
-                if(dest<cur) sprite.classList.add('face-flip'); else sprite.classList.remove('face-flip');
-            } else if(r<0.6) pet.classList.add('jumping'); else if(r<0.7) { pet.classList.add('spinning'); showEmote('✨'); }
+        function interactPet() {
+            const vis = document.getElementById('pet-visual');
+            vis.classList.add('pop');
+            showEmote('🥰');
+            setTimeout(() => vis.classList.remove('pop'), 500);
         }
-        function petInteract() { petAI.moving=false; const p=document.getElementById('pet-container'); p.style.transition="none"; p.classList.remove('jumping','spinning'); void p.offsetWidth; p.classList.add('double-jumping'); showEmote('❤️'); }
-        function petResume(){ petAI.moving=true; }
-        function showEmote(e){ const b=document.getElementById('emote-bubble'); b.innerText=e; b.classList.add('emote-visible'); setTimeout(()=>b.classList.remove('emote-visible'),1500); }
-        function addTask() { 
-            const v=document.getElementById('task-input').value; 
-            if(v){ const d=document.createElement('div');d.className='task-card';d.innerText=v;d.onclick=function(){this.remove()}; document.getElementById('col-todo').appendChild(d); document.getElementById('task-input').value="";}
+
+        function showEmote(e) {
+            const b = document.getElementById('pet-bubble');
+            b.innerText = e; b.classList.add('show');
+            setTimeout(() => b.classList.remove('show'), 1500);
+        }
+
+        // --- UTILS ---
+        function openOverlay(id) {
+            document.getElementById('overlay-'+id).classList.remove('hidden');
+            const data = slots[currentSlot];
+            const tId = id === 'inventory' ? 'grid-fruit' : 'grid-words';
+            const arr = id === 'inventory' ? data.inventory : data.journal;
+            document.getElementById(tId).innerHTML = arr.map(i => 
+                `<div class="item-card"><div style="font-size:1.5rem">${i.icon || i.jp}</div><small>${i.name || i.m}</small></div>`
+            ).join('') || 'Vacío';
+        }
+        function closeOverlays() { document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden')); }
+
+        function toggleFullView() {
+            document.getElementById('garden-view').classList.toggle('fullscreen-active');
         }
     </script>
 </body>
